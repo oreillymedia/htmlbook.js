@@ -64,8 +64,6 @@ htmlbook = function (source) {
     var section_content;
 
     // check to see if there are subheadings inside here.
-    console.log(children.find('h2'));
-
     if (is_deep(content, first_element.tag_name)) {
       // section_content = make_section()
       return "OYEZ"
@@ -75,7 +73,9 @@ htmlbook = function (source) {
 
     var section = $('<section data-type="' + htmlbooklevel.name + '">');
 
-    return section.append(first_element.html).append(content);
+    section.append(first_element.html).append(section_content);
+
+    return $('<div>').html(section).html();
   }
 
   function is_deep(content, parent_tag_name) {
@@ -84,7 +84,12 @@ htmlbook = function (source) {
     if (heading_index == 6) {
       return false;
     } else {
-      return $(content).find('h' + heading_index++);
+      var found = $(content).find('h' + heading_index++);
+      if (found.length == 0) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 
@@ -98,7 +103,7 @@ htmlbook = function (source) {
         'heading': htmlbooklevel.heading,
         'level': htmlbooklevel.name,
         'content': heading.html(),
-        'html': $('<' + htmlbooklevel.heading + '>').html(heading.html())
+        'html': '<' + htmlbooklevel.heading + '>' + heading.html() + '</' + htmlbooklevel.heading + '>'
       }
     }
   }
