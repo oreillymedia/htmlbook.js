@@ -1,4 +1,20 @@
+// sect = {
+//   htmlbook_level: 'sect1',
+//   title: Section Heading,
+//   content: {
+//     HTMLELEMENTS
+//   },
+//   children: [sects]
+// }
+
 htmlbook = function (source) {
+  var htmlbook_levels = [
+    'book',
+    'chapter',
+    'sect1',
+    'sect2'
+  ]
+
   // Source should be a string of html. Put it in a <body> element to enable traversing with jQuery.
   var body = $('<body>').append(source);
   children = body.children();
@@ -16,18 +32,41 @@ htmlbook = function (source) {
   h1_children = h1.nextUntil('h1');
   chapter = $('<section data-type="chapter">').append(h1);
 
-  // Ok, so we are inside an H1 block right now, let's look for h2's
-  before_h2 = $(h1_children).first().nextUntil('h2');
-  // before_h2 is all elements until the next h2, so our h2 is one more than the length of before_h2
-  h2 = $(h1_children[before_h2.length+1])
-
-  sect1_body = h2.nextUntil('h2');
-
-  sect1 = $('<section data-type="sect1">').append(h2);
-  sect1.append(sect1_body);
-
-  chapter.append(before_h2);
+  sect1 = next_level('chapter', 'h1', h1_children);
   chapter.append(sect1);
 
   return chapter;
+
+  // Private: this method is used to accept a chunk of html and drill down to .the next heading level. From Chapter into sect1
+  //
+  // current_htmlbook_level - String i.e. 'chapter', 'sect1', 'sect2'
+  // current_h - String i.e. 'h1', 'h2'
+  // html - jQuery object of HTML elements
+  function next_level (current_htmlbook_level, current_h, html) {
+    var current_h_number = current_h.substr(1);
+    var next_h_number = parseInt(current_h_number) + 1;
+    var next_h = 'h' + next_h_number;
+    var next_html_book_level = htmlbook_levels[htmlbook_levels.indexOf(current_htmlbook_level) + 1];
+
+    // There are only 6 headers available in HTML.
+    if (next_h_number > 6) {
+      return html;
+    }
+
+    var parent_content = $(html).first().nextUntil(next_h);
+
+    var title_el = $(html[parent_content.length + 1]);
+    var title = title_el.html();
+
+    var sect = $('<section data-type="' + next_html_book_level + '">')
+    var sect_body = title_el.nextUntil(next_h);
+
+    var temp_div = $('<div>');
+
+    sect.append('<h1>' + title + '</h1>').append(sect_body);
+    temp_div.append(parent_content);
+    temp_div.append(sect);
+
+    return temp_div.html();
+  }
 }
