@@ -1,41 +1,107 @@
-// sect = {
-//   htmlbook_level: 'sect1',
-//   title: Section Heading,
-//   content: {
-//     HTMLELEMENTS
-//   },
-//   children: [sects]
-// }
-
 htmlbook = function (source) {
-  var htmlbook_levels = [
-    'book',
-    'chapter',
-    'sect1',
-    'sect2'
-  ]
-
-  // Source should be a string of html. Put it in a <body> element to enable traversing with jQuery.
-  var body = $('<body>').append(source);
-  children = body.children();
-
-  // the first child must be an h1
-  first_element = $(body.children().first())
-
-  // Exit with an error if the first element is not an H1.
-  if (first_element.prop("tagName") != "H1") {
-    return "Error, the first child must be an H1";
+  var htmlbook_spec = {
+    'book': {
+      name: 'book',
+      parent: false,
+      child: 'chapter',
+      heading: 'h1',
+      level: 0
+    },
+    'chapter': {
+      name: 'chapter',
+      parent: 'book',
+      child: 'sect1',
+      heading: 'h1',
+      level: 1
+    },
+    'sect1': {
+      name: 'sect1',
+      parent: 'chapter',
+      child: 'sect2',
+      heading: 'h1',
+      level: 2
+    },
+    'sect2': {
+      name: 'sect2',
+      parent: 'sect1',
+      child: 'sect3',
+      heading: 'h2',
+      level: 3
+    },
+    'sect3': {
+      name: 'sect3',
+      parent:'sect2',
+      heading: 'h3',
+      level: 4
+    },
+    'sect4': {
+      name: 'sect4',
+      parent:'sect3',
+      child: false,
+      heading: 'h4',
+      level: 5
+    }
   }
 
-  // rename the first element
-  h1 = first_element;
-  h1_children = h1.nextUntil('h1');
-  chapter = $('<section data-type="chapter">').append(h1);
+  // todo: detect if the input is in a wrapping element (body or div) or not.
 
-  sect1 = next_level('chapter', 'h1', h1_children);
-  chapter.append(sect1);
+  var body = $('<body>').append(source);
+  var children = body.children();
+  var htmlbooklevel = htmlbook_spec.chapter;
 
-  return chapter;
+  return make_section(children, htmlbooklevel);
+
+  // make_section - recursive part of this library, takes an amount of html, // looks at top level header, and looks for a sub-section. if there's a
+  // subsection, call this again.
+  // content: jQuery collection where the first element is a header.
+  function make_section (content, htmlbooklevel) {
+    var wrap = $('<div>').append(content);
+    var children = wrap.children();
+
+    // parse the first element, hoping for a heading, and assigning it the
+    // proper tag based on the htmlbook level
+    var first_element = deconstruct_heading(children.first(), htmlbooklevel);
+    var section_content;
+
+    // check to see if there are subheadings inside here.
+    console.log(children.find('h2'));
+
+    if (is_deep(content, first_element.tag_name)) {
+      // section_content = make_section()
+      return "OYEZ"
+    } else {
+      section_content = content.splice(1);
+    }
+
+    var section = $('<section data-type="' + htmlbooklevel.name + '">');
+
+    return section.append(first_element.html).append(content);
+  }
+
+  function is_deep(content, parent_tag_name) {
+    var heading_index = parseInt(parent_tag_name.substr(1));
+
+    if (heading_index == 6) {
+      return false;
+    } else {
+      return $(content).find('h' + heading_index++);
+    }
+  }
+
+  function deconstruct_heading (heading, htmlbooklevel) {
+    var tag_name = heading.prop('tagName')
+    if (tag_name.match(/H[1-6]/) == null) {
+      return false;
+    } else {
+      return {
+        'tag_name': tag_name,
+        'heading': htmlbooklevel.heading,
+        'level': htmlbooklevel.name,
+        'content': heading.html(),
+        'html': $('<' + htmlbooklevel.heading + '>').html(heading.html())
+      }
+    }
+  }
 
   // Private: this method is used to accept a chunk of html and drill down to .the next heading level. From Chapter into sect1
   //
