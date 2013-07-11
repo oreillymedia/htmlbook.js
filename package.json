@@ -1,16 +1,14 @@
 {
-  "name": "html2book",
-  "version": "0.0.0",
-  "description": "ERROR: No README.md file found!",
-  "main": "index.js",
+  "name": "htmlbook.js",
+  "version": "0.0.1",
+  "description": "HTML to HTMLBook parser and validator",
+  "main": "htmlbook.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": "",
-  "author": "",
-  "license": "BSD",
+  "author": "Steve Klise",
+  "license": "MIT",
   "dependencies": {
-    "marked": "",
-    "jquery":""
   }
 }
