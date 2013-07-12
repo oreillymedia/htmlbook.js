@@ -1,5 +1,5 @@
 // Check to see if one level of the parser is working.
-describe('Simplest HTML', function () {
+describe('#0 Simplest HTML', function () {
   var source_html;
   var spec_html;
 
@@ -15,7 +15,7 @@ describe('Simplest HTML', function () {
 });
 
 // Nested but a single branch.
-describe('One Heading Per Level', function () {
+describe('#1 One Heading Per Level', function () {
   var source_html;
   var spec_html;
 
@@ -30,11 +30,12 @@ describe('One Heading Per Level', function () {
   });
 });
 
-describe('Two Headings Per Level', function () {
+describe('#2 Two Headings Per Level', function () {
   var source_html;
   var spec_html;
 
   beforeEach(function () {
+    console.log("#########\nTEST #2\n#########")
     source_html = $('#example2').html();
     spec_html = $('#example2-spec').html().split("\n").join('');
   })
