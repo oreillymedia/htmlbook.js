@@ -35,13 +35,8 @@ describe('Two Headings Per Level', function () {
   var spec_html;
 
   beforeEach(function () {
-    $.get('example2.html').done(function(res) {
-      source_html = res;
-    });
-
-    $.get('example2-htmlbook.html').done(function(res) {
-      spec_html = res.split("\n").join('');
-    })
+    source_html = $('#example2').html();
+    spec_html = $('#example2-spec').html().split("\n").join('');
   })
 
   it("should convert to be equal to the sample", function () {

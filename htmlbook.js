@@ -55,7 +55,7 @@ htmlbook = function (source) {
   // subsection, call this again.
   // content: jQuery collection where the first element is a header.
   function make_section (content, htmlbooklevel) {
-    var wrap = $('<div>').append(content);
+    var wrap = $('<div>').html(content);
     var children = wrap.children();
 
     // parse the first element, hoping for a heading, and assigning it the
@@ -63,10 +63,16 @@ htmlbook = function (source) {
     var first_element = deconstruct_heading(children.first(), htmlbooklevel);
     var section_content;
 
-    // check to see if there are subheadings inside here.
-    if (is_deep(content, first_element.tag_name)) {
-      // section_content = make_section()
-      return "OYEZ"
+    console.log('f', first_element, '\nc', children.first())
+    // are there more headings?
+    var more_headings = find_headings(content, first_element.tag_name);
+
+    if (more_headings == 'samelevel') {
+      console.log('same level');
+    } else if (more_headings == 'subheadings') {
+      var subheading = htmlbook_spec[htmlbooklevel.child];
+      console.log('sub headings')
+      section_content = make_section(content.splice(1), subheading)
     } else {
       section_content = content.splice(1);
     }
@@ -78,23 +84,26 @@ htmlbook = function (source) {
     return $('<div>').html(section).html();
   }
 
-  function is_deep(content, parent_tag_name) {
+  function find_headings(content, parent_tag_name) {
+    var content = $(content).clone().splice(1);
+    var wrap = $('<div>').html(content);
     var heading_index = parseInt(parent_tag_name.substr(1));
+    var subheadings = $(wrap).find('h' + (heading_index+1));
 
     if (heading_index == 6) {
       return false;
+    } else if ($(wrap).find(parent_tag_name).length > 0) {
+      return 'samelevel';
+    } else if (subheadings.length > 0) {
+      return 'subheadings';
     } else {
-      var found = $(content).find('h' + heading_index++);
-      if (found.length == 0) {
-        return false;
-      } else {
-        return true;
-      }
+      return false;
     }
   }
 
   function deconstruct_heading (heading, htmlbooklevel) {
-    var tag_name = heading.prop('tagName')
+    var tag_name = heading.prop('tagName');
+
     if (tag_name.match(/H[1-6]/) == null) {
       return false;
     } else {
@@ -106,38 +115,5 @@ htmlbook = function (source) {
         'html': '<' + htmlbooklevel.heading + '>' + heading.html() + '</' + htmlbooklevel.heading + '>'
       }
     }
-  }
-
-  // Private: this method is used to accept a chunk of html and drill down to .the next heading level. From Chapter into sect1
-  //
-  // current_htmlbook_level - String i.e. 'chapter', 'sect1', 'sect2'
-  // current_h - String i.e. 'h1', 'h2'
-  // html - jQuery object of HTML elements
-  function next_level (current_htmlbook_level, current_h, html) {
-    var current_h_number = current_h.substr(1);
-    var next_h_number = parseInt(current_h_number) + 1;
-    var next_h = 'h' + next_h_number;
-    var next_html_book_level = htmlbook_levels[htmlbook_levels.indexOf(current_htmlbook_level) + 1];
-
-    // There are only 6 headers available in HTML.
-    if (next_h_number > 6) {
-      return html;
-    }
-
-    var parent_content = $(html).first().nextUntil(next_h);
-
-    var title_el = $(html[parent_content.length + 1]);
-    var title = title_el.html();
-
-    var sect = $('<section data-type="' + next_html_book_level + '">')
-    var sect_body = title_el.nextUntil(next_h);
-
-    var temp_div = $('<div>');
-
-    sect.append('<h1>' + title + '</h1>').append(sect_body);
-    temp_div.append(parent_content);
-    temp_div.append(sect);
-
-    return temp_div.html();
   }
 }
