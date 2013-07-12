@@ -57,29 +57,40 @@ htmlbook = function (source) {
   function make_section (content, htmlbooklevel) {
     var wrap = $('<div>').html(content);
     var children = wrap.children();
+    var section_child_content = '';
 
     // parse the first element, hoping for a heading, and assigning it the
     // proper tag based on the htmlbook level
+    console.log(children.first());
     var first_element = deconstruct_heading(children.first(), htmlbooklevel);
+
     var section_content;
 
-    console.log('f', first_element, '\nc', children.first())
     // are there more headings?
-    var more_headings = find_headings(content, first_element.tag_name);
+    if (first_element != false) {
+      console.log("found a heading as the first element")
+      var more_headings = find_headings(content, first_element.tag_name);
 
-    if (more_headings == 'samelevel') {
-      console.log('same level');
-    } else if (more_headings == 'subheadings') {
-      var subheading = htmlbook_spec[htmlbooklevel.child];
-      console.log('sub headings')
-      section_content = make_section(content.splice(1), subheading)
+      if (more_headings == 'samelevel') {
+        section_content = section_child_content
+      } else if (more_headings == 'subheadings') {
+        var subheading = htmlbook_spec[htmlbooklevel.child];
+        console.log('sub headings', subheading);
+        section_content = make_section(content.splice(1), subheading);
+      } else {
+        section_content = content.splice(1);
+      }
+
+      var section = $('<section data-type="' + htmlbooklevel.name + '">');
+      section.append(first_element.html).append(section_content);
     } else {
-      section_content = content.splice(1);
+      var rest = content.splice(1);
+      var first = content;
+      console.log('fail point', first, content)
+      section_content = $('<div>').html(first).html() + make_section(rest, htmlbooklevel);
+
+      var section = $('<div>').html(section_content).html();
     }
-
-    var section = $('<section data-type="' + htmlbooklevel.name + '">');
-
-    section.append(first_element.html).append(section_content);
 
     return $('<div>').html(section).html();
   }
@@ -93,6 +104,7 @@ htmlbook = function (source) {
     if (heading_index == 6) {
       return false;
     } else if ($(wrap).find(parent_tag_name).length > 0) {
+      console.log('found same level', parent_tag_name, $(wrap).find(parent_tag_name))
       return 'samelevel';
     } else if (subheadings.length > 0) {
       return 'subheadings';
