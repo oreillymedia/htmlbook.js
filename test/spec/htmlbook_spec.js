@@ -72,3 +72,33 @@ describe('#4 - Parser should accept both strings and jQuery objects.', function 
     expect(parsed).toEqual(spec_html);
   });
 });
+
+describe('#5 - Wrapping Divs', function () {
+  var source_html, spec_html;
+
+  it("should not have <section>s inside of <div>s", function () {
+  });
+});
+
+describe('#6 - Additional Arguments', function () {
+  var source_html, spec_html;
+
+  it("should accept {level: STRING} where STRING is a valid HTMLBook section level", function () {
+  });
+
+  it("should default book level to 'chapter'", function () {
+  });
+
+  it("should accept {fragment: false} and return a complete html document", function () {
+
+  });
+
+  it("should default to {fragment:true} and return a fragment starting with <h1> or <section>", function () {
+  });
+});
+
+describe('#7 - Be Idempotent', function () {
+  it("should recognize proper HTMLBook and pass over it.", function () {
+
+  });
+});
