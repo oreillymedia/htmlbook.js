@@ -51,21 +51,27 @@ htmlbook = function (source) {
 
   return make_section(children, htmlbooklevel);
 
-  // make_section - recursive part of this library, takes an amount of html, // looks at top level header, and looks for a sub-section. if there's a
+  // make_section - recursive part of this library, takes an amount of html,
+  // looks at top level header, and looks for a sub-section. if there's a
   // subsection, call this again.
   // content: jQuery collection where the first element is a header.
   function make_section (content, htmlbooklevel) {
-    var wrap = $('<div>').html(content);
-    var children = wrap.children();
-    var section_child_content = '';
-
-    // parse the first element, hoping for a heading, and assigning it the
-    // proper tag based on the htmlbook level
-    console.log(children.first());
-    var first_element = deconstruct_heading(children.first(), htmlbooklevel);
-
+    // initialize variables
     var section_content;
     var after_stuff = '';
+
+    // Take the input, wrap it in a div and then get the children. In this way
+    // if 'content' is a string it will be converted into a jQuery object and
+    // if it's already a jQuery object everything is fine.
+    var wrap = $('<div>').html(content);
+    var children = wrap.children();
+
+
+    // Do some analysis on the first element. HTMLBook is pretty strict as to
+    // what the first element should be: either a heading or a div must start
+    // a new section. If the element is neither of those, assume we have inner
+    // section content.
+    var first_element = deconstruct_heading(children.first(), htmlbooklevel);
 
     // are there more headings?
     if (first_element != false) {

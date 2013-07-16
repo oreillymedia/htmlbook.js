@@ -61,3 +61,19 @@ describe('#3 - Two Headings Per Level, each with child content.', function () {
     expect(parsed).toEqual(spec_html);
   });
 });
+
+describe('#4 - Parser should accept both strings and jQuery objects.', function () {
+  var source_html;
+  var spec_html;
+
+  beforeEach(function () {
+    console.log("#########\nTEST #4\n#########")
+    source_html = $('#example3').html();
+    spec_html = $('#example3-spec').html().split("\n").join('');
+  })
+
+  it("should convert to be equal to the sample", function () {
+    var parsed = htmlbook($('<div>').html(source_html).children());
+    expect(parsed).toEqual(spec_html);
+  });
+});
