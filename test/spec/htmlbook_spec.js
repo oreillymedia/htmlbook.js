@@ -1,5 +1,5 @@
 // Check to see if one level of the parser is working.
-describe('#0 Simplest HTML', function () {
+describe('#0 - One heading, two paragraphs', function () {
   var source_html;
   var spec_html;
 
@@ -15,7 +15,7 @@ describe('#0 Simplest HTML', function () {
 });
 
 // Nested but a single branch.
-describe('#1 One Heading Per Level', function () {
+describe('#1 - Three Headings One Heading Per Level', function () {
   var source_html;
   var spec_html;
 
@@ -30,7 +30,7 @@ describe('#1 One Heading Per Level', function () {
   });
 });
 
-describe('#2 Two Headings Per Level', function () {
+describe('#2 - Two Headings Per Level, each with child content.', function () {
   var source_html;
   var spec_html;
 
@@ -44,4 +44,20 @@ describe('#2 Two Headings Per Level', function () {
     var parsed = htmlbook($('<div>').html(source_html).html());
     expect(parsed).toEqual(spec_html);
   });
-})
+});
+
+describe('#3 - Two Headings Per Level, each with child content.', function () {
+  var source_html;
+  var spec_html;
+
+  beforeEach(function () {
+    console.log("#########\nTEST #3\n#########")
+    source_html = $('#example3').html();
+    spec_html = $('#example3-spec').html().split("\n").join('');
+  })
+
+  it("should convert to be equal to the sample", function () {
+    var parsed = htmlbook($('<div>').html(source_html).html());
+    expect(parsed).toEqual(spec_html);
+  });
+});

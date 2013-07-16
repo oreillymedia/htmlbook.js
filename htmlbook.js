@@ -65,6 +65,7 @@ htmlbook = function (source) {
     var first_element = deconstruct_heading(children.first(), htmlbooklevel);
 
     var section_content;
+    var after_stuff = '';
 
     // are there more headings?
     if (first_element != false) {
@@ -72,7 +73,13 @@ htmlbook = function (source) {
       var more_headings = find_headings(content, first_element.tag_name);
 
       if (more_headings == 'samelevel') {
-        section_content = section_child_content
+        var subheading = htmlbook_spec[htmlbooklevel.child];
+        var next_heading = wrap.find(first_element.tag_name+':gt(0)').first();
+
+        var nested_element_count = next_heading.index() - 1;
+
+        section_content = make_section(content.splice(1, nested_element_count), subheading);
+        after_stuff = make_section(content.splice(1), htmlbooklevel);
       } else if (more_headings == 'subheadings') {
         var subheading = htmlbook_spec[htmlbooklevel.child];
         console.log('sub headings', subheading);
@@ -92,7 +99,7 @@ htmlbook = function (source) {
       var section = $('<div>').html(section_content).html();
     }
 
-    return $('<div>').html(section).html();
+    return $('<div>').html(section).html() + after_stuff;
   }
 
   function find_headings(content, parent_tag_name) {
