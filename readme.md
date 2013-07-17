@@ -17,8 +17,8 @@ Download this library into your directory (it's not on npm just yet) and do `npm
 For both the browser and Node.js, usage is the same
 
 ```
-var input = HTML TEXT OR JQUERY OBJECT
-var output = htmlbook(input).parse(opts);
+var input = "HTML TEXT OR JQUERY OBJECT"
+var output = HTMLBook(input).parse(opts);
 ```
 
 ### Opts
