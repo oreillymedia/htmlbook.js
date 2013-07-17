@@ -1,4 +1,9 @@
 htmlbook = function (source) {
+  var skeleton = {
+    'header': '<!DOCTYPE html><html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/1999/xhtml ../schema/htmlbook.xsd" xmlns="http://www.w3.org/1999/xhtml"><head><title>HTMLBook Sample</title><meta name="HTMLBook Sample" content="text/html; charset=utf-8" /></head><body data-type="book" class="book" id="htmlbook">',
+    'footer': '</body></html>'
+  }
+
   var htmlbook_spec = {
     'book': {
       name: 'book',
@@ -47,9 +52,30 @@ htmlbook = function (source) {
 
   var body = $('<body>').append(source);
   var children = body.children();
-  var htmlbooklevel = htmlbook_spec.chapter;
+  var args = Array.prototype.slice.call(arguments);
+  var options = {
+    fragment: true,
+    level: htmlbook_spec.chapter
+  };
+  var errors = []
 
-  return parse_html(children, htmlbooklevel);
+  // parse arguments and merge with options
+  if (args.length > 1 && typeof args[1] === 'object') {
+    options = $.extend(options, args[1]);
+
+    if (typeof htmlbook_spec[options.level] !== 'undefined') {
+      options.level = htmlbook_spec[options.level];
+    } else {
+      errors.push("please specify a valid htmlbook level. defaulting to chapter");
+      options.level = htmlbook_spec.chapter;
+    }
+  }
+
+  if (options.fragment) {
+    return parse_html(children, options.level);
+  } else {
+    return skeleton.header + parse_html(children, options.level) + skeleton.footer;
+  }
 
   // parse_html - recursive part of this library, takes an amount of html,
   // looks at top level header, and looks for a sub-section. if there's a
@@ -150,5 +176,15 @@ htmlbook = function (source) {
         'html': '<' + htmlbooklevel.heading + '>' + heading.html() + '</' + htmlbooklevel.heading + '>'
       }
     }
+  }
+
+  //from sugar.js
+  function multiArgs(args, fn) {
+    var result = [], i;
+    for(i = 0; i < args.length; i++) {
+      result.push(args[i]);
+      if(fn) fn.call(args, args[i], i);
+    }
+    return result;
   }
 }

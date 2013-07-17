@@ -67,38 +67,59 @@ describe('#4 - Parser should accept both strings and jQuery objects.', function 
     spec_html = $('#example3-spec').html().split("\n").join('');
   });
 
-  it("should convert to be equal to the sample", function () {
-    var parsed = htmlbook($('<div>').html(source_html).children());
+  it("should accept a string of HTML", function () {
+    console.log('source type:', typeof source_html);
+    var parsed = htmlbook(source_html);
+    expect(parsed).toEqual(spec_html);
+  });
+
+  it("should accept a jQuery object", function () {
+    var source = $('<div>').html(source_html).children();
+    console.log('source type:', typeof source);
+    var parsed = htmlbook(source);
     expect(parsed).toEqual(spec_html);
   });
 });
 
-describe('#5 - Wrapping Divs', function () {
+describe('#5 - Additional Arguments', function () {
   var source_html, spec_html;
 
-  it("should not have <section>s inside of <div>s", function () {
+  beforeEach(function () {
+    console.log("#########\nTEST #5\n#########");
+    source_html = $('#example5').html();
   });
-});
-
-describe('#6 - Additional Arguments', function () {
-  var source_html, spec_html;
 
   it("should accept {level: STRING} where STRING is a valid HTMLBook section level", function () {
+    spec_html = $('#example5-spec-book').html().split("\n").join('');
+
+    var output = htmlbook(source_html, {'level':'book'});
+    expect(output).toEqual(spec_html);
   });
 
   it("should default book level to 'chapter'", function () {
+    spec_html = $('#example5-spec-chapter').html().split("\n").join('');
+    var output = htmlbook(source_html);
+
+    expect(output).toEqual(spec_html);
   });
 
   it("should accept {fragment: false} and return a complete html document", function () {
-
-  });
-
-  it("should default to {fragment:true} and return a fragment starting with <h1> or <section>", function () {
-  });
-});
-
-describe('#7 - Be Idempotent', function () {
-  it("should recognize proper HTMLBook and pass over it.", function () {
-
+    spec_html = $('#example5-spec-complete').html().split("\n").join('');
+    var output = htmlbook(source_html, {'fragment': false});
+    expect(output).toEqual(spec_html);
   });
 });
+
+// describe('#6 - Divs', function () {
+//   var source_html, spec_html;
+
+//   it("should not have <section>s inside of <div>s", function () { });
+
+//   it("should ensure that headings inside of <div>s meet spect", function () {});
+// });
+
+// describe('#7 - Be Idempotent', function () {
+//   it("should recognize proper HTMLBook and pass over it.", function () {
+
+//   });
+// });
