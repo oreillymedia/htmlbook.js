@@ -8,6 +8,7 @@
   },
   "repository": "",
   "author": "Steve Klise",
+  "license": "MIT",
   "dependencies": {
     "jquery": "",
     "marked": ""
