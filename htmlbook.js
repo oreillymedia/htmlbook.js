@@ -1,28 +1,47 @@
 !(function () {
   function HTMLBook(source) {
     this.source = source;
+
+    if (typeof module !== 'undefined'  && typeof module.exports !== 'undefined') {
+      // If this is
+      this.$ = require('jquery');
+      this.marked = require('marked');
+    }
+    else {
+      this.$ = $;
+      this.marked = marked;
+    }
+
+    this.marked.setOptions({
+      gfm: true
+    });
   }
 
   var hp = HTMLBook.prototype = {
     parse: function () {
-      var body = $('<body>').append(this.source),
+      var body = this.$('<body>').append(this.source),
         children = body.children(),
         args = Array.prototype.slice.call(arguments),
         options = {
           fragment: true,
-          level: htmlbook_spec.chapter
+          level: htmlbook_spec.chapter,
+          sourceFormat: 'html'
         },
         logs = [];
 
       // parse arguments and merge with options
       if (args.length == 1 && typeof args[0] === 'object') {
-        options = $.extend(options, args[0]);
+        options = this.$.extend(options, args[0]);
 
         if (typeof htmlbook_spec[options.level] !== 'undefined') {
           options.level = htmlbook_spec[options.level];
         } else {
           logs.push("please specify a valid htmlbook level. defaulting to chapter");
           options.level = htmlbook_spec.chapter;
+        }
+
+        if (options.sourceFormat === 'markdown') {
+          children = this.$('<body>').append(this.marked(this.source)).children();
         }
       }
 
@@ -46,8 +65,10 @@
       // Take the input, wrap it in a div and then get the children. In this way
       // if 'content' is a string it will be converted into a jQuery object and
       // if it's already a jQuery object everything is fine.
-      var wrap = $('<div>').html(content);
+      var wrap = this.$('<div>').html(content);
       var children = wrap.children();
+
+      if (children.length === 0) { return ''; }
 
       // Do some analysis on the first element. HTMLBook is pretty strict as to
       // what the first element should be: either a heading or a div must start
@@ -67,12 +88,12 @@
         var first = content;
         var section_content;
         console.log('no more headings in this branch.');
-        section_content = $('<div>').html(first).html() + this.parse_html(rest, htmlbooklevel);
+        section_content = this.$('<div>').html(first).html() + this.parse_html(rest, htmlbooklevel);
 
-        section = $('<div>').html(section_content).html();
+        section = this.$('<div>').html(section_content).html();
       }
 
-      return $('<div>').html(section).html() + next_section;
+      return this.$('<div>').html(section).html() + next_section;
     },
 
      wrap_in_section: function (htmlbooklevel, children, first_element, more_headings) {
@@ -80,7 +101,7 @@
 
       if (more_headings == 'samelevel') {
         subheading = htmlbook_spec[htmlbooklevel.child];
-        next_heading_index = $('<div>').html(children).find(first_element.tag_name+':gt(0)').first().index();
+        next_heading_index = this.$('<div>').html(children).find(first_element.tag_name+':gt(0)').first().index();
         nested_element_count = next_heading_index - 1;
 
         section_content = this.parse_html(children.splice(1, nested_element_count), subheading);
@@ -95,21 +116,21 @@
         section_content = children.splice(1);
       }
 
-      section = $('<section data-type="' + htmlbooklevel.name + '">');
+      section = this.$('<section data-type="' + htmlbooklevel.name + '">');
       section.append(first_element.html).append(section_content);
 
       return [section, next_section];
     },
 
     find_headings: function (content, parent_tag_name) {
-      var content = $(content).clone().splice(1);
-      var wrap = $('<div>').html(content);
+      var content = this.$(content).clone().splice(1);
+      var wrap = this.$('<div>').html(content);
       var heading_index = parseInt(parent_tag_name.substr(1));
-      var subheadings = $(wrap).find('h' + (heading_index+1));
+      var subheadings = this.$(wrap).find('h' + (heading_index+1));
 
       if (heading_index == 6) {
         return false;
-      } else if ($(wrap).find(parent_tag_name).length > 0) {
+      } else if (this.$(wrap).find(parent_tag_name).length > 0) {
         return 'samelevel';
       } else if (subheadings.length > 0) {
         return 'subheadings';
@@ -120,7 +141,6 @@
 
     deconstruct_heading: function (heading, htmlbooklevel) {
       var tag_name = heading.prop('tagName');
-
       if (tag_name.match(/H[1-6]/) == null) {
         return false;
       } else {

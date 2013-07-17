@@ -9,5 +9,7 @@
   "repository": "",
   "author": "Steve Klise",
   "dependencies": {
+    "jquery": "",
+    "marked": ""
   }
 }

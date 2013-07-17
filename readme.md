@@ -9,8 +9,8 @@ Parses HTML into [HTMLBook](https://github.com/oreillymedia/htmlbook).
 Add the htmlbook.js script to a page with jQuery (tested with jQuery 1.10.2).
 
 ```
-var input = <HTML TEXT OR JQUERY OBJECT>
-var output = htmlbook(input);
+var input = HTML TEXT OR JQUERY OBJECT
+var output = htmlbook(input).parse(opts);
 ```
 
 ### Node.js

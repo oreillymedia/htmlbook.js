@@ -110,6 +110,18 @@ describe('#5 - Additional Arguments', function () {
   });
 });
 
+describe('#6 - Allow Markdown Input', function () {
+  var source_html, spec_html;
+
+  it("should accept markdown as an input and convert it", function () {
+    spec_html = $('#example3-spec').html().split("\n").join('');
+    source_html = $('#example6').html();
+
+    var output = HTMLBook(source_html).parse({'sourceFormat':'markdown'});
+    expect(output).toEqual(spec_html);
+  });
+});
+
 // describe('#6 - Divs', function () {
 //   var source_html, spec_html;
 
