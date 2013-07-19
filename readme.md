@@ -10,7 +10,7 @@ Add the htmlbook.js script to a page with jQuery (tested with jQuery 1.10.2) and
 
 ### Node.js
 
-Download this library into your directory (it's not on npm just yet) and do `npm install` to install [jquery](https://npmjs.org/package/jquery) and [marked](https://npmjs.org/package/marked).
+Install with npm: `npm install htmlbook`
 
 ## Usage
 

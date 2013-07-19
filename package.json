@@ -1,5 +1,5 @@
 {
-  "name": "htmlbook.js",
+  "name": "htmlbook",
   "version": "0.0.1",
   "description": "HTML to HTMLBook parser",
   "main": "./htmlbook.js",
