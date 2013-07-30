@@ -5,6 +5,7 @@ var sys = require('sys'),
   optparse = require('optparse'),
   path = require('path'),
   htmlbook = require('../htmlbook'),
+  html = require('html'),
   cwd = process.cwd();
 
 // Define an option called ´´help´´. We give it a quick alias named ´´-h´´
@@ -59,7 +60,7 @@ if (source_path) {
     var result = htmlbook(data).parse(options);
 
     if (output_path) {
-      fs.writeFile(output_path, result);
+      fs.writeFile(output_path, html.prettyPrint(result, {indent_size: 2}));
     } else {
       sys.puts(result);
     }

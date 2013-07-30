@@ -1,6 +1,6 @@
 {
   "name": "htmlbook",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "HTML to HTMLBook parser",
   "main": "./htmlbook.js",
   "bin": {
@@ -19,6 +19,7 @@
   "dependencies": {
     "jquery": "1.8.3",
     "marked": "0.2.9",
-    "optparse": "1.0.4"
+    "optparse": "1.0.4",
+    "html": "0.0.7"
   }
 }
