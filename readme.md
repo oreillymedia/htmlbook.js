@@ -10,9 +10,11 @@ Add the htmlbook.js script to a page with jQuery (tested with jQuery 1.10.2) and
 
 ### Node.js
 
-Install with npm: `npm install htmlbook`
+Install with npm: `npm install -g htmlbook`
 
 ## Usage
+
+### Browser & Node.js
 
 For both the browser and Node.js, usage is the same
 
@@ -20,6 +22,16 @@ For both the browser and Node.js, usage is the same
 var input = "HTML TEXT OR JQUERY OBJECT"
 var output = HTMLBook(input).parse(opts);
 ```
+
+### Command Line
+
+Installing this package with npm and the `-g` flag will install an executable.
+
+```
+$ htmlbook -s SOURCE_FILE -o OUTPUT_FILE
+```
+
+Additionally, type `$ htmlbook --help` for all options.
 
 ### Opts
 
