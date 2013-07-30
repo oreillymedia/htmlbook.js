@@ -40,3 +40,4 @@ Below is a list of available options, default value is emphasized.
 - sourceFormat: _html_ or markdown
 - fragment: _false_ or true
 - level: _chapter_ or book
+- debug: boolean -- default for command line is 'false'
