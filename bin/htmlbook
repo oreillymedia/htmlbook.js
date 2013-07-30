@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+var sys = require('sys'),
+  fs = require('fs'),
+  optparse = require('optparse'),
+  path = require('path'),
+  htmlbook = require('../htmlbook'),
+  cwd = process.cwd();
+
+// Define an option called ´´help´´. We give it a quick alias named ´´-h´´
+// and a quick help text.
+var switches = [
+  ['-h', '--help', 'Shows help sections'],
+  ['-s', '--source FILE', 'Source file location relative to cwd'],
+  ['-o', '--output FILE', 'Output file location relative to cwd'],
+  ['-l', '--level', 'Specify the heading level to output to'],
+  // ['-d', '--debug', 'Show HTMLBook debugging'],
+  ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
+];
+
+// Create a new OptionParser.
+var parser = new optparse.OptionParser(switches);
+var source_path, output_path, options = {
+  'sourceFormat': 'html',
+  'debug': false
+};
+
+parser.banner = "Usage: htmlbook [options]"
+
+parser.on('source', function (name, value) {
+  source_path = path.join(cwd, value);
+});
+
+parser.on('output', function (name, value) {
+  output_path = path.join(cwd, value);
+})
+
+parser.on('help', function() {
+  sys.puts(parser.toString());
+});
+
+parser.on('markdown', function() {
+  options.sourceFormat = 'markdown';
+});
+
+parser.on('debug', function () {
+  options.debug = true;
+});
+
+parser.parse(process.argv);
+
+if (source_path) {
+  fs.readFile(source_path, 'utf8', function (err, data) {
+    if (err) {
+      sys.puts(err);
+      process.exit();
+    }
+
+    var result = htmlbook(data).parse(options);
+
+    if (output_path) {
+      fs.writeFile(output_path, result);
+    } else {
+      sys.puts(result);
+    }
+  });
+}
