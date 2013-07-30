@@ -3,6 +3,11 @@
     this.source = source;
 
     if (typeof module !== 'undefined'  && typeof module.exports !== 'undefined') {
+
+      var sys = require('sys');
+      this.log = function (message) {
+        sys.puts(message);
+      }
       // If this is
       this.$ = require('jquery');
       this.marked = require('marked');
@@ -10,6 +15,9 @@
     else {
       this.$ = $;
       this.marked = marked;
+      this.log = function (message) {
+        console.log(message);
+      }
     }
 
     this.marked.setOptions({
@@ -23,6 +31,7 @@
         children = body.children(),
         args = Array.prototype.slice.call(arguments),
         options = {
+          debug: true,
           fragment: true,
           level: htmlbook_spec.chapter,
           sourceFormat: 'html'
@@ -38,6 +47,12 @@
         } else {
           logs.push("please specify a valid htmlbook level. defaulting to chapter");
           options.level = htmlbook_spec.chapter;
+        }
+
+        if (options.debug === false) {
+          this.log = function (message) {
+            return message;
+          }
         }
 
         if (options.sourceFormat === 'markdown') {
@@ -57,7 +72,7 @@
     // subsection, call this again.
     // content: jQuery collection where the first element is a header.
     parse_html: function (content, htmlbooklevel) {
-      console.log("\n>>> Making section " + htmlbooklevel.name);
+      this.log("\n>>> Making section " + htmlbooklevel.name);
       // initialize variables
       var section;
       var next_section = '';
@@ -78,7 +93,7 @@
 
       // are there more headings?
       if (first_element != false) {
-        console.log("found a heading as the first element")
+        this.log("found a heading as the first element")
         var more_headings = this.find_headings(content, first_element.tag_name);
         var arr = this.wrap_in_section(htmlbooklevel, children, first_element, more_headings);
         section = arr[0];
@@ -87,7 +102,7 @@
         var rest = content.splice(1);
         var first = content;
         var section_content;
-        console.log('no more headings in this branch.');
+        this.log('no more headings in this branch.');
         section_content = this.$('<div>').html(first).html() + this.parse_html(rest, htmlbooklevel);
 
         section = this.$('<div>').html(section_content).html();
@@ -108,11 +123,11 @@
         next_section = this.parse_html(children.splice(1), htmlbooklevel);
       } else if (more_headings == 'subheadings') {
         subheading = htmlbook_spec[htmlbooklevel.child];
-        console.log('sub headings');
+        this.log('sub headings');
         section_content = this.parse_html(children.splice(1), subheading);
       } else {
         // There are no other headings, so the work is done.
-        console.log("no more headings in the document.");
+        this.log("no more headings in the document.");
         section_content = children.splice(1);
       }
 

@@ -15,7 +15,7 @@ var switches = [
   ['-s', '--source FILE', 'Source file location relative to cwd'],
   ['-o', '--output FILE', 'Output file location relative to cwd'],
   ['-l', '--level', 'Specify the heading level to output to'],
-  // ['-d', '--debug', 'Show HTMLBook debugging'],
+  ['-d', '--debug', 'Show HTMLBook debugging'],
   ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
 ];
 
