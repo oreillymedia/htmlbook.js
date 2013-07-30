@@ -1,10 +1,10 @@
 {
   "name": "htmlbook",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "HTML to HTMLBook parser",
   "main": "./htmlbook.js",
   "bin": {
-    "htmlbook": "bin/htmlbook.js"
+    "htmlbook": "bin/htmlbook"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
