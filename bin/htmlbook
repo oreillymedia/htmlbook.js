@@ -29,7 +29,11 @@ var source_path, output_path, options = {
 parser.banner = "Usage: htmlbook [options]"
 
 parser.on('source', function (name, value) {
-  source_path = path.join(cwd, value);
+  if (value[0] === "/") {
+    source_path = value;
+  } else {
+    source_path = path.join(cwd, value);
+  }
 });
 
 parser.on('output', function (name, value) {
