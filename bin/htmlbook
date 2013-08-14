@@ -58,7 +58,7 @@ if (source_path) {
   fs.readFile(source_path, 'utf8', function (err, data) {
     if (err) {
       sys.puts(err);
-      process.exit();
+      process.exit(1);
     }
 
     var result = htmlbook(data).parse(options);
