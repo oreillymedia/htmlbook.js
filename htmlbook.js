@@ -2,8 +2,10 @@
   function HTMLBook(source) {
     this.source = source;
 
+    // Detect if module is being run from the browser or a Node environment and
+    // set up a standard logging platform for both as well as requiring
+    // dependencies properly.
     if (typeof module !== 'undefined'  && typeof module.exports !== 'undefined') {
-
       var sys = require('sys');
       this.log = function (message) {
         sys.puts(message);
@@ -72,6 +74,10 @@
     // subsection, call this again.
     // content: jQuery collection where the first element is a header.
     parse_html: function (content, htmlbooklevel) {
+      if (!(htmlbooklevel != null)) {
+        return content;
+      }
+
       this.log("\n>>> Making section " + htmlbooklevel.name);
       // initialize variables
       var section;
