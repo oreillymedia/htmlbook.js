@@ -22,6 +22,7 @@
     "optparse": "1.0.4",
     "html": "0.0.7",
     "underscore":"",
-    "htmlparser2":""
+    "htmlparser2":"",
+    "xml2js": ""
   }
 }
