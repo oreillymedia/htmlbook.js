@@ -1,11 +1,13 @@
 var sys = require('sys'),
   fs = require('fs'),
+  util = require('util'),
   _ = require('underscore'),
   htmlparser = require('htmlparser2'),
   xml2js = require('xml2js'),
   xml_parser = new xml2js.Parser(),
   schema,
-  elements;
+  elements,
+  headers = ['h1','h2','h3','h4','h5','h6'];
 
 var existy = function (x) {
   return x != null;
@@ -22,7 +24,7 @@ var parse = function (raw_html, callback) {
     if (error){
       console.log('error dog'); process.exit(1)
     } else {
-      callback(dom)
+      console.log(callback(dom))
     }
   });
   var parser = new htmlparser.Parser(handler);
@@ -30,19 +32,42 @@ var parse = function (raw_html, callback) {
   parser.done()
 }
 
-traverse = function (dom_tree, depth) {
-  if (!existy(depth))
-    depth = 0
+var attribs_to_string = function (obj) {
+  if (!existy(obj))
+    return ""
 
-  _.forEach(dom_tree, function (node) {
-    if (existy(node.name))
-      console.log(indentation(depth),  _.findWhere(elements, {name: node.name}));
-    if (existy(node.children))
-      traverse(node.children, depth + 1)
-  });
+  return _.reduce(_.pairs(obj), function (memo, v) {
+    return memo + " " + v[0] + "='" + v[1]+ "'"
+  }, "");
 }
 
-htmlbook = function (input) {
+var open_tag = function (node) {
+  return "<" + node.name + attribs_to_string(node.attribs) + ">"
+}
+
+var close_tag = function (node) {
+  return "</" + node.name + ">"
+}
+
+var traverse = function (dom_tree, depth) {
+  if (!existy(depth))
+    depth = 1
+
+  output = ""
+
+  _.forEach(dom_tree, function (node, i) {
+    if (_.contains(headers, node.name))
+      output += "\n++++++++++++++++++++++++++++++++++++\n"
+
+    if (node.type === "text") {
+      output += node.data
+    } else if (existy(node.children))
+      output += open_tag(node) + traverse(node.children, depth + 1) + close_tag(node)
+  });
+  return output;
+}
+
+var htmlbook = function (input) {
   parse(input, traverse);
 }
 
@@ -50,13 +75,10 @@ htmlbook = function (input) {
 xml_parser.addListener('end', function(result) {
   // save the result
   schema = result;
-
-  elements = _.map(schema["xs:schema"]["xs:element"], function (x) {
-    return x["$"]
-  });
+  elements = schema["xs:schema"]["xs:element"];
 
   // Read the source, start conversion
-  fs.readFile("../htmlbook/samples/htmlbook.html", "utf-8", function (e,d) {
+  fs.readFile("test/documents/test.html", "utf-8", function (e,d) {
     htmlbook(d);
   });
 });
