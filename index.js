@@ -24,14 +24,44 @@ var helpers = {
   }
 }
 
+var normalize_headings = function (arr) {
+  return _.map(arr, function (n, i) {
+    if (i == 0)
+      return n
+    else if (n > arr[i-1]+1)
+      return arr[i-1] + 1
+    else
+      return n
+  });
+}
+
+var concat_times = function (n, str, connector) {
+  return _.times(n, function () {
+    return str
+  }).join(connector)
+}
+
+var close_sections = function (dom) {
+  doc_headings = [];
+
+  _.forEach(dom, function(node) {
+    if (helpers.existy(node.name) && _.contains(headers,node.name)) {
+      doc_headings.push(parseInt(node.name.substr(1)));
+    }
+  });
+
+  console.log('normalize', normalize_headings(doc_headings));
+}
+
 // Parse the html input and pass off to the traverse callback
 var parse = function (raw_html, callback) {
   var handler = new htmlparser.DomHandler(function (error, dom) {
     if (error){
       console.log('error dog'); process.exit(1)
     } else {
-      console.log(callback(dom))
-      // callback(dom);
+      closings = 0;
+      openings = 0;
+      console.log(callback(dom) + concat_times(openings - closings, "</section>", "\n") );
     }
   });
   var parser = new htmlparser.Parser(handler);
@@ -55,6 +85,7 @@ var open_tag = function (node) {
   return "<" + node.name + attribs_to_string(node.attribs) + ">"
 }
 
+// TODO: Self closing tags
 var close_tag = function (node) {
   return "</" + node.name + ">"
 }
@@ -81,12 +112,6 @@ var compare_headings = function (book_section, book_heading, html_heading) {
   }
 }
 
-// TODO: include a parameter indicating the htmlbook level, section wise.
-// When you get to a header, respond in such a way.
-// - if this new header is a sub-section, start new section
-// - if this new header is same level, close section, start new.
-// - if this new header is above, close sections according to disparity.
-// - ....something to handle the end of the document for closing tags....
 var traverse = function (dom_tree, htmlbook_tracker) {
   // Set depth if not passed.
   if (!helpers.existy(htmlbook_tracker))
@@ -100,6 +125,7 @@ var traverse = function (dom_tree, htmlbook_tracker) {
     // Check to see if this node is a header, which should signal the start of
     // a new section.
     } else if (_.contains(headers, node.name)) {
+      openings += 1
       // output += section_starter(htmlbook_tracker, node);
       bookpart = _.find(complex, function (el) {
         return el["$"]["name"] === heirarchy[htmlbook_tracker.heirarchy];
@@ -113,6 +139,7 @@ var traverse = function (dom_tree, htmlbook_tracker) {
       r = compare_headings(bookpart_name, bookpart_heading, node.name)
 
       htmlbook_tracker.heirarchy = r.heirarchy
+      closings += r.closings
 
       node.name = r.heading
 
