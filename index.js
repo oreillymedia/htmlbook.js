@@ -60,7 +60,7 @@ var close_tag = function (node) {
 }
 
 var section_starter = function (diff, level) {
-  return _.times(diff, function() {return "</section>"}).join("") + "<section data-type='" + heirarchy[level] + "'>"
+  return _.times(diff, function() {return "</section>"}).join("\n") + "\n<section data-type='" + heirarchy[level] + "'>"
 }
 
 var compare_headings = function (book_section, book_heading, html_heading) {
@@ -116,7 +116,7 @@ var traverse = function (dom_tree, htmlbook_tracker) {
 
       node.name = r.heading
 
-      output += section_starter(r.closings, r.heirarchy) + open_tag(node)+ traverse(node.children, htmlbook_tracker) + close_tag(node)
+      output += section_starter(r.closings, r.heirarchy) + "\n" + open_tag(node)+ traverse(node.children, htmlbook_tracker) + close_tag(node)
 
     } else if (helpers.existy(node.children)) {
       // Something here to parse the tag and adjust its attribs to align with
