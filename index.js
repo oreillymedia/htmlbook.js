@@ -4,27 +4,34 @@ var sys = require('sys'),
   _ = require('underscore'),
   htmlparser = require('htmlparser2'),
   xml2js = require('xml2js'),
-  xml_parser = new xml2js.Parser(),
+  html = require('html');
+
+var xml_parser = new xml2js.Parser(),
   schema,
   elements,
-  headers = ['h1','h2','h3','h4','h5','h6'];
+  headers = ['h1','h2','h3','h4','h5','h6'],
+  heirarchy = ['bookmaindiv', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5', 'sect6'];
 
-var existy = function (x) {
-  return x != null;
+var helpers = {
+  existy: function (x) {
+    return x != null;
+  },
+  // Converts an integer to 2 space indentation.
+  indentation: function (n) {
+    return _.times(n, function () {
+      return "  "
+    }).join("")
+  }
 }
 
-var indentation = function (n) {
-  return _.reduce(_.range(n), function (indent, x) {
-    return indent + "  "
-  }, "")
-}
-
+// Parse the html input and pass off to the traverse callback
 var parse = function (raw_html, callback) {
   var handler = new htmlparser.DomHandler(function (error, dom) {
     if (error){
       console.log('error dog'); process.exit(1)
     } else {
       console.log(callback(dom))
+      // callback(dom);
     }
   });
   var parser = new htmlparser.Parser(handler);
@@ -32,8 +39,10 @@ var parse = function (raw_html, callback) {
   parser.done()
 }
 
+// Converts an object of attributes to a string.
+// TODO: verify that all attributes are getting converted properly.
 var attribs_to_string = function (obj) {
-  if (!existy(obj))
+  if (!helpers.existy(obj))
     return ""
 
   return _.reduce(_.pairs(obj), function (memo, v) {
@@ -41,6 +50,7 @@ var attribs_to_string = function (obj) {
   }, "");
 }
 
+// Construct an opening tag with the specified attributes.
 var open_tag = function (node) {
   return "<" + node.name + attribs_to_string(node.attribs) + ">"
 }
@@ -49,20 +59,70 @@ var close_tag = function (node) {
   return "</" + node.name + ">"
 }
 
-var traverse = function (dom_tree, depth) {
-  if (!existy(depth))
-    depth = 1
+var section_starter = function (diff, level) {
+  return _.times(diff, function() {return "</section>"}).join("") + "<section data-type='" + heirarchy[level] + "'>"
+}
 
+var compare_headings = function (book_section, book_heading, html_heading) {
+  var book_val = parseInt(book_heading.substr(1));
+  var html_val = parseInt(html_heading.substr(1));
+
+  if (book_section === "chapter"){
+    return {heading: "h1", closings: 0, heirarchy: 1}
+  }
+  else if (book_val === html_val){
+    return {heading: "h" + book_val, closings: 1, heirarchy: _.indexOf(heirarchy, "sect"+ book_val)}
+  }
+  else if (book_val < html_val){
+    return {heading: "h" + (book_val+1), closings: 0, heirarchy: _.indexOf(heirarchy, "sect"+ (book_val+1))}
+  }
+  else if (book_val > html_val){
+    return {heading: "h" + html_val, closings:(book_val - html_val + 1), heirarchy: _.indexOf(heirarchy, "sect"+ html_val)}
+  }
+}
+
+// TODO: include a parameter indicating the htmlbook level, section wise.
+// When you get to a header, respond in such a way.
+// - if this new header is a sub-section, start new section
+// - if this new header is same level, close section, start new.
+// - if this new header is above, close sections according to disparity.
+// - ....something to handle the end of the document for closing tags....
+var traverse = function (dom_tree, htmlbook_tracker) {
+  // Set depth if not passed.
+  if (!helpers.existy(htmlbook_tracker))
+    htmlbook_tracker = {"heirarchy" : 0}
   output = ""
 
   _.forEach(dom_tree, function (node, i) {
-    if (_.contains(headers, node.name))
-      output += "\n++++++++++++++++++++++++++++++++++++\n"
-
+    // When the node is a text type, it has no children, just return it.
     if (node.type === "text") {
       output += node.data
-    } else if (existy(node.children))
-      output += open_tag(node) + traverse(node.children, depth + 1) + close_tag(node)
+    // Check to see if this node is a header, which should signal the start of
+    // a new section.
+    } else if (_.contains(headers, node.name)) {
+      // output += section_starter(htmlbook_tracker, node);
+      bookpart = _.find(complex, function (el) {
+        return el["$"]["name"] === heirarchy[htmlbook_tracker.heirarchy];
+      });
+      bookpart_heading = bookpart["xs:sequence"][0]["xs:element"][0]["$"]['ref']
+      bookpart_name = bookpart["$"]["name"]
+
+      if (bookpart_name === "bookmaindiv")
+        bookpart_name = "chapter"
+
+      r = compare_headings(bookpart_name, bookpart_heading, node.name)
+
+      htmlbook_tracker.heirarchy = r.heirarchy
+
+      node.name = r.heading
+
+      output += section_starter(r.closings, r.heirarchy) + open_tag(node)+ traverse(node.children, htmlbook_tracker) + close_tag(node)
+
+    } else if (helpers.existy(node.children)) {
+      // Something here to parse the tag and adjust its attribs to align with
+      //
+      output += open_tag(node) + traverse(node.children, htmlbook_tracker) + close_tag(node);
+    }
   });
   return output;
 }
@@ -76,6 +136,9 @@ xml_parser.addListener('end', function(result) {
   // save the result
   schema = result;
   elements = schema["xs:schema"]["xs:element"];
+  complex = schema["xs:schema"]["xs:complexType"];
+
+  fs.writeFile("schema.js", JSON.stringify(schema, null, 2));
 
   // Read the source, start conversion
   fs.readFile("test/documents/test.html", "utf-8", function (e,d) {
