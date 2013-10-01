@@ -4,6 +4,7 @@ var sys = require('sys'),
   _ = require('underscore'),
   htmlparser = require('htmlparser'),
   html = require('html'),
+  marked = require('marked'),
   schema = require('./schema'),
   elements = schema["xs:schema"]["xs:element"],
   complex = schema["xs:schema"]["xs:complexType"],
@@ -65,7 +66,7 @@ var headers = ['h1','h2','h3','h4','h5','h6'],
       }
     });
     var parser = new htmlparser.Parser(handler);
-    parser.parseComplete(this.input);
+    parser.parseComplete(marked(this.input));
     parser.done();
     return this.traverse(handler.dom) + close_sections(this.openings, this.closings);
   }

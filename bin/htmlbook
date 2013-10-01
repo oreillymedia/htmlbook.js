@@ -4,7 +4,7 @@ var sys = require('sys'),
   fs = require('fs'),
   optparse = require('optparse'),
   path = require('path'),
-  htmlbook = require('../htmlbook'),
+  htmlbook = require('../index'),
   html = require('html'),
   cwd = process.cwd();
 
@@ -15,14 +15,13 @@ var switches = [
   ['-s', '--source FILE', 'Source file location relative to cwd'],
   ['-o', '--output FILE', 'Output file location relative to cwd'],
   ['-l', '--level', 'Specify the heading level to output to'],
-  ['-d', '--debug', 'Show HTMLBook debugging'],
-  ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
+  ['-d', '--debug', 'Show HTMLBook debugging']
+  // ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
 ];
 
 // Create a new OptionParser.
 var parser = new optparse.OptionParser(switches);
 var source_path, output_path, options = {
-  'sourceFormat': 'html',
   'debug': false
 };
 
@@ -42,10 +41,6 @@ parser.on('output', function (name, value) {
 
 parser.on('help', function() {
   sys.puts(parser.toString());
-});
-
-parser.on('markdown', function() {
-  options.sourceFormat = 'markdown';
 });
 
 parser.on('debug', function () {
