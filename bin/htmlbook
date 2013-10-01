@@ -4,7 +4,7 @@ var sys = require('sys'),
   fs = require('fs'),
   optparse = require('optparse'),
   path = require('path'),
-  htmlbook = require('../index'),
+  htmlbook = require('../htmlbook'),
   html = require('html'),
   cwd = process.cwd();
 
