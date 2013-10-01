@@ -7,8 +7,7 @@ var sys = require('sys'),
   marked = require('marked'),
   schema = require('./schema'),
   elements = schema["xs:schema"]["xs:element"],
-  complex = schema["xs:schema"]["xs:complexType"],
-  queue = require('queue-async');
+  complex = schema["xs:schema"]["xs:complexType"];
 
 
 var headers = ['h1','h2','h3','h4','h5','h6'],
@@ -58,8 +57,11 @@ var headers = ['h1','h2','h3','h4','h5','h6'],
 
   // Parse the html input and pass off to the traverse callback
   HTMLBook.prototype.parse = function () {
+    if (!helpers.existy(this.input)) throw new Error("No content");
     this.closings = 0;
     this.openings = 0;
+    this.first_heading = true;
+    this.first_sect1 = false;
     var handler = new htmlparser.DefaultHandler(function (error, dom) {
       if (error) {
         console.log('error dog');process.exit(1)
@@ -94,12 +96,19 @@ var headers = ['h1','h2','h3','h4','h5','h6'],
     return _.times(diff, function() {return "</section>"}).join("\n") + "\n<section data-type='" + heirarchy[level] + "'>"
   }
 
-  var compare_headings = function (book_section, book_heading, html_heading) {
+  HTMLBook.prototype.compare_headings = function (book_section, book_heading, html_heading) {
     var book_val = parseInt(book_heading.substr(1));
     var html_val = parseInt(html_heading.substr(1));
 
-    if (book_section === "chapter"){
+    if (this.first_sect1 === true) {
+      this.first_sect1 = false;
       return {heading: "h1", closings: 0, heirarchy: 1}
+    }
+
+    if (book_section === "bookmaindiv"){
+      this.first_heading = false;
+      this.first_sect1 = true;
+      return {heading: "h1", closings: 0, heirarchy: 0}
     }
     else if (book_val === html_val){
       return {heading: "h" + book_val, closings: 1, heirarchy: _.indexOf(heirarchy, "sect"+ book_val)}
@@ -133,17 +142,15 @@ var headers = ['h1','h2','h3','h4','h5','h6'],
         bookpart_heading = bookpart["xs:sequence"][0]["xs:element"][0]["$"]['ref']
         bookpart_name = bookpart["$"]["name"]
 
-        if (bookpart_name === "bookmaindiv")
-          bookpart_name = "chapter"
-
-        r = compare_headings(bookpart_name, bookpart_heading, node.name)
+        r = this.compare_headings(bookpart_name, bookpart_heading, node.name)
 
         htmlbook_tracker.heirarchy = r.heirarchy
+
         this.closings += r.closings;
 
         node.name = r.heading
 
-        output += section_starter(r.closings, r.heirarchy) + "\n" + open_tag(node)+ this.traverse(node.children, htmlbook_tracker) + close_tag(node)
+        output += section_starter(r.closings, r.heirarchy).replace("bookmaindiv","chapter") + "\n" + open_tag(node)+ this.traverse(node.children, htmlbook_tracker) + close_tag(node)
 
       } else if (helpers.existy(node.children)) {
         // Something here to parse the tag and adjust its attribs to align with
