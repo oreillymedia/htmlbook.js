@@ -8,14 +8,32 @@ Install with npm: `npm install -g htmlbook`
 
 ## Usage
 
+### Node.js
+
+Within Node, **htmlbook.js** works on strings.
+
 ```
-var input = "MARKDOWN CONTENT"
-var output = HTMLBook(input).parse(opts);
+var htmlbook = require('htmlbook');
+var htmlbook_output = htmlbook("source content").parse();
+```
+
+To use **htmlbook.js** with a file, in Node.js do the following:
+
+```
+var fs = require('fs');
+var htmlbook = require('htmlbook');
+
+var htmlbook_output;
+
+fs.readFile('path/to/file.md', 'utf-8', function (error, data) {
+  if (error)
+    return error;
+
+  htmlbook_output = htmlbook(data).parse();
+})
 ```
 
 ### Command Line
-
-Installing this package with npm and the `-g` flag will install an executable.
 
 ```
 $ htmlbook -s SOURCE_FILE -o OUTPUT_FILE
@@ -23,7 +41,7 @@ $ htmlbook -s SOURCE_FILE -o OUTPUT_FILE
 
 Additionally, type `$ htmlbook --help` for all options.
 
-### Opts
+## Options
 
 Below is a list of available options, default value is emphasized.
 
