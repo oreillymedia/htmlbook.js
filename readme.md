@@ -12,14 +12,14 @@ Install with npm: `npm install -g htmlbook`
 
 Within Node, **htmlbook.js** works on strings.
 
-```
+```javascript
 var htmlbook = require('htmlbook');
 var htmlbook_output = htmlbook("source content").parse();
 ```
 
 To use **htmlbook.js** with a file, in Node.js do the following:
 
-```
+```javascript
 var fs = require('fs');
 var htmlbook = require('htmlbook');
 
@@ -35,7 +35,7 @@ fs.readFile('path/to/file.md', 'utf-8', function (error, data) {
 
 ### Command Line
 
-```
+```bash
 $ htmlbook -s SOURCE_FILE -o OUTPUT_FILE
 ```
 
