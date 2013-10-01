@@ -17,12 +17,14 @@
   "author": "O'Reilly Media",
   "license": "MIT",
   "dependencies": {
-    "jquery": "1.8.3",
     "marked": "0.2.9",
     "optparse": "1.0.4",
     "html": "0.0.7",
     "underscore":"",
-    "htmlparser2":"",
-    "xml2js": ""
+    "htmlparser2":""
+  },
+  "devDependencies": {
+    "xml2js": "",
+    "jasmine-node": ""
   }
 }

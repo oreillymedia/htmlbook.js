@@ -1,25 +1,15 @@
 # htmlbook.js
 
-Parses HTML into [HTMLBook](https://github.com/oreillymedia/htmlbook).
+Converts Markdown to [HTMLBook](https://github.com/oreillymedia/htmlbook).
 
-## Setup
-
-### Browser
-
-Add the htmlbook.js script to a page with jQuery (tested with jQuery 1.10.2) and [Marked](https://github.com/chjj/marked).
-
-### Node.js
+## Installation
 
 Install with npm: `npm install -g htmlbook`
 
 ## Usage
 
-### Browser & Node.js
-
-For both the browser and Node.js, usage is the same
-
 ```
-var input = "HTML TEXT OR JQUERY OBJECT"
+var input = "MARKDOWN CONTENT"
 var output = HTMLBook(input).parse(opts);
 ```
 
@@ -37,7 +27,6 @@ Additionally, type `$ htmlbook --help` for all options.
 
 Below is a list of available options, default value is emphasized.
 
-- sourceFormat: _html_ or markdown
 - fragment: _false_ or true
 - level: _chapter_ or book
 - debug: boolean -- default for command line is 'false'
