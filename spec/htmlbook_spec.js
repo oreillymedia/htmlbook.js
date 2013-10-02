@@ -17,13 +17,34 @@ describe("htmlbook", function () {
   });
 
   it("should convert a document with all section levels", function (done) {
-    fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, data) {
-      if (err) throw new Error("Error opening the document");
+    fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
 
-      expect(htmlbook(data).parse()).toEqual("\n<section data-type='chapter'>\n<h1>Chapter Title</h1>\n\n<section data-type='sect1'>\n<h1>Heading 1</h1>\n\n<section data-type='sect2'>\n<h2>Heading 2</h2>\n\n<section data-type='sect3'>\n<h3>Heading 3</h3>\n\n<section data-type='sect4'>\n<h4>Heading 4</h4>\n\n<section data-type='sect5'>\n<h5>Heading 5</h5>\n\n<section data-type='sect6'>\n<h6>Heading 6</h6>\n</section>\n</section>\n</section>\n</section>\n</section>\n</section>\n</section>");
-      done();
+      fs.readFile("spec/documents/all_headings.html", "utf-8", function (err, html) {
+        if (err) throw new Error("Error opening html document");
+
+        expect(htmlbook(source).parse()).toEqual(html);
+        done();
+      });
     });
   });
+
+  it("should return complete HTML documents when passed the option", function (done) {
+    done()
+  });
+
+  // it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
+  //   fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
+  //     if (err) throw new Error("Error opening the document");
+
+  //     var result = htmlbook(data).parse();
+
+  //     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
+  //       expect(result).toEqual(html);
+  //       done();
+  //     });
+  //   });
+  // });
 
   // it("should be idempotent");
   // it("should also accept HTML documents");

@@ -10,7 +10,7 @@ var sys = require('sys'),
   complex = schema["xs:schema"]["xs:complexType"];
 
 
-var headers = ['h1','h2','h3','h4','h5','h6'],
+var headers = ['h1','h2','h3','h4','h5'],
   heirarchy = ['bookmaindiv', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5', 'sect6'];
 
 (function () {
@@ -49,10 +49,6 @@ var headers = ['h1','h2','h3','h4','h5','h6'],
 
   function HTMLBook (input, opts, callback) {
     this.input = input;
-  }
-
-  var the_parser = function (input, callback) {
-
   }
 
   // Parse the html input and pass off to the traverse callback
