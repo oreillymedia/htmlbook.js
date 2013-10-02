@@ -30,7 +30,16 @@ describe("htmlbook", function () {
   });
 
   it("should return complete HTML documents when passed the option", function (done) {
-    done()
+    fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
+
+      fs.readFile("spec/documents/all_headings_complete.html", "utf-8", function (err, html) {
+        if (err) throw new Error("Error opening html document");
+
+        expect(htmlbook(source, {"title": "Given Title"}).parse({"complete_html": true})).toEqual(html);
+        done();
+      });
+    });
   });
 
   // it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {

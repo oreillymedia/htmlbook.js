@@ -47,12 +47,33 @@ var headers = ['h1','h2','h3','h4','h5'],
     return concat_times(o - c, "</section>", "\n");
   }
 
-  function HTMLBook (input, opts, callback) {
+  function HTMLBook (input, opts) {
     this.input = input;
+    this.options = {};
+
+    if (helpers.existy(opts) && typeof opts === "object") {
+      this.title = opts.title;
+      this.options = _.extend(this.options, opts);
+    }
+  }
+
+  HTMLBook.prototype.header_content = function () {
+    if (!helpers.existy(this.title)) throw new Error("No title provided.")
+
+    return '<?xml version="1.0" encoding="utf-8"?>\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml" lang="en">\n<head>\n<title>' + this.title + '</title>\n</head>\n<body data-type="book">\n<h1>' + this.title + '</h1>';
+  }
+
+  HTMLBook.prototype.footer_content = function () {
+    return "\n</body>\n</html>";
   }
 
   // Parse the html input and pass off to the traverse callback
-  HTMLBook.prototype.parse = function () {
+  HTMLBook.prototype.parse = function (opts) {
+    this.options.parse = {"complete_html": false}
+    if (helpers.existy(opts) && typeof opts === "object") {
+      this.options.parse = _.extend(this.options.parse, opts)
+    }
+
     if (!helpers.existy(this.input)) throw new Error("No content");
     this.closings = 0;
     this.openings = 0;
@@ -66,7 +87,13 @@ var headers = ['h1','h2','h3','h4','h5'],
     var parser = new htmlparser.Parser(handler);
     parser.parseComplete(marked(this.input));
     parser.done();
-    return this.traverse(handler.dom) + close_sections(this.openings, this.closings);
+
+    if (this.options.parse.complete_html === true) {
+      return this.header_content() + this.traverse(handler.dom) + close_sections(this.openings, this.closings) + this.footer_content();
+    }
+    else {
+      return this.traverse(handler.dom) + close_sections(this.openings, this.closings);
+    }
   }
 
   // Converts an object of attributes to a string.
@@ -154,8 +181,9 @@ var headers = ['h1','h2','h3','h4','h5'],
         output += open_tag(node) + this.traverse(node.children, htmlbook_tracker) + close_tag(node);
       }
     }, this);
-    return output;
+
+    return output
   }
 
-  module.exports = function (str) {return new HTMLBook(str)};
+  module.exports = function (str, opts) {return new HTMLBook(str, opts)};
 }).call(this);
