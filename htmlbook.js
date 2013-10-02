@@ -7,11 +7,13 @@ var sys = require('sys'),
   marked = require('marked'),
   schema = require('./schema'),
   elements = schema["xs:schema"]["xs:element"],
-  complex = schema["xs:schema"]["xs:complexType"];
+  complex = schema["xs:schema"]["xs:complexType"],
+  S = require('string');
 
 
-var headers = ['h1','h2','h3','h4','h5'],
-  heirarchy = ['bookmaindiv', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5', 'sect6'];
+var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
+  htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
+  heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'];
 
 (function () {
   var helpers = {
@@ -49,6 +51,7 @@ var headers = ['h1','h2','h3','h4','h5'],
 
   function HTMLBook (input, opts) {
     this.input = input;
+    this.depth = 0;
     this.options = {};
 
     if (helpers.existy(opts) && typeof opts === "object") {
@@ -60,7 +63,7 @@ var headers = ['h1','h2','h3','h4','h5'],
   HTMLBook.prototype.header_content = function () {
     if (!helpers.existy(this.title)) throw new Error("No title provided.")
 
-    return '<?xml version="1.0" encoding="utf-8"?>\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml" lang="en">\n<head>\n<title>' + this.title + '</title>\n</head>\n<body data-type="book">\n<h1>' + this.title + '</h1>';
+    return '<?xml version="1.0" encoding="utf-8"?>\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml" lang="en">\n<head>\n<title>' + this.title + '</title>\n</head>\n<body data-type="book">\n<h1>' + this.title + '</h1>\n';
   }
 
   HTMLBook.prototype.footer_content = function () {
@@ -69,6 +72,7 @@ var headers = ['h1','h2','h3','h4','h5'],
 
   // Parse the html input and pass off to the traverse callback
   HTMLBook.prototype.parse = function (opts) {
+    this.first_sect = true;
     this.options.parse = {"complete_html": false}
     if (helpers.existy(opts) && typeof opts === "object") {
       this.options.parse = _.extend(this.options.parse, opts)
@@ -120,34 +124,51 @@ var headers = ['h1','h2','h3','h4','h5'],
   }
 
   HTMLBook.prototype.compare_headings = function (book_section, book_heading, html_heading) {
+
     var book_val = parseInt(book_heading.substr(1));
     var html_val = parseInt(html_heading.substr(1));
+    var markdown_val = markdown_headers[_.indexOf(htmlbook_headers, html_heading)]
 
-    if (this.first_sect1 === true) {
-      this.first_sect1 = false;
-      return {heading: "h1", closings: 0, heirarchy: 1}
-    }
-
-    if (book_section === "bookmaindiv"){
-      this.first_heading = false;
-      this.first_sect1 = true;
-      return {heading: "h1", closings: 0, heirarchy: 0}
+    if (book_val === html_val && book_section === "bookmaindiv"){
+      return {heading:"h1", "closings":"0", heirarchy:0}
     }
     else if (book_val === html_val){
-      return {heading: "h" + book_val, closings: 1, heirarchy: _.indexOf(heirarchy, "sect"+ book_val)}
+      return {heading: htmlbook_headers[book_val], closings: 1, heirarchy: _.indexOf(heirarchy, "sect"+ book_val)}
     }
     else if (book_val < html_val){
-      return {heading: "h" + (book_val+1), closings: 0, heirarchy: _.indexOf(heirarchy, "sect"+ (book_val+1))}
+      return {heading: htmlbook_headers[book_val+1], closings: 0, heirarchy: _.indexOf(heirarchy, "sect"+ (book_val+1))}
     }
     else if (book_val > html_val){
       return {heading: "h" + html_val, closings:(book_val - html_val + 1), heirarchy: _.indexOf(heirarchy, "sect"+ html_val)}
     }
   }
 
+  HTMLBook.prototype.section_start = function (name) {
+    var current_section = heirarchy[this.depth];
+    var header_depth = _.indexOf(markdown_headers, name);
+    var new_section = heirarchy[header_depth];
+    var closings = 0;
+
+    if (this.depth === header_depth) {
+      closings = (this.first_sect === true) ? 0 : 1;
+      this.first_sect = false;
+    } else if (this.depth < header_depth) {
+      this.depth += 1;
+    } else if (this.depth > header_depth) {
+      closings = this.depth - header_depth + 1;
+      this.depth = header_depth;
+    }
+
+    this.closings += closings
+
+    return _.times(closings, function() {return "</section>\n"}).join("") + "<section data-type='" + heirarchy[this.depth] + "'>\n";
+  }
+
+  HTMLBook.prototype.wrap_in_section = function (node, callback) {
+    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + ">" + callback(node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
+  }
+
   HTMLBook.prototype.traverse = function (dom_tree, htmlbook_tracker) {
-    // Set depth if not passed.
-    if (!helpers.existy(htmlbook_tracker))
-      htmlbook_tracker = {"heirarchy" : 0}
     output = ""
 
     _.forEach(dom_tree, function (node, i) {
@@ -156,33 +177,17 @@ var headers = ['h1','h2','h3','h4','h5'],
         output += node.data
       // Check to see if this node is a header, which should signal the start of
       // a new section.
-      } else if (_.contains(headers, node.name)) {
+      } else if (_.contains(markdown_headers, node.name)) {
         this.openings += 1;
-        // output += section_starter(htmlbook_tracker, node);
-        bookpart = _.find(complex, function (el) {
-          return el["$"]["name"] === heirarchy[htmlbook_tracker.heirarchy];
-        });
-        bookpart_heading = bookpart["xs:sequence"][0]["xs:element"][0]["$"]['ref']
-        bookpart_name = bookpart["$"]["name"]
-
-        r = this.compare_headings(bookpart_name, bookpart_heading, node.name)
-
-        htmlbook_tracker.heirarchy = r.heirarchy
-
-        this.closings += r.closings;
-
-        node.name = r.heading
-
-        output += section_starter(r.closings, r.heirarchy).replace("bookmaindiv","chapter") + "\n" + open_tag(node)+ this.traverse(node.children, htmlbook_tracker) + close_tag(node)
-
+        output += this.wrap_in_section(node, this.traverse)
       } else if (helpers.existy(node.children)) {
         // Something here to parse the tag and adjust its attribs to align with
         //
-        output += open_tag(node) + this.traverse(node.children, htmlbook_tracker) + close_tag(node);
+        output += open_tag(node) + this.traverse(node.children) + close_tag(node);
       }
     }, this);
 
-    return output
+    return S(output).decodeHTMLEntities().s;
   }
 
   module.exports = function (str, opts) {return new HTMLBook(str, opts)};

@@ -13,7 +13,7 @@ describe("htmlbook", function () {
   });
 
   it("should insert an HTMLBook Chapter in the document", function (done) {
-    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("\n<section data-type='chapter'>\n<h1>Title</h1>\n<p>some line of stuff</p>\n</section>");
+    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("<section data-type='chapter'>\n<h1>Title</h1>\n\n<p>some line of stuff</p>\n</section>");
     done();
   });
 
@@ -30,34 +30,34 @@ describe("htmlbook", function () {
     });
   });
 
-  // it("should return complete HTML documents when passed the option", function (done) {
-  //   fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, source) {
-  //     if (err) throw new Error("Error opening source document");
+  it("should return complete HTML documents when passed the option", function (done) {
+    fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
 
-  //     fs.readFile("spec/documents/all_headings_complete.html", "utf-8", function (err, html) {
-  //       if (err) throw new Error("Error opening html document");
+      fs.readFile("spec/documents/all_headings_complete.html", "utf-8", function (err, html) {
+        if (err) throw new Error("Error opening html document");
 
-  //       expect(htmlbook(source, {"title": "Given Title"}).parse({"complete_html": true})).toEqual(html);
-  //       done();
-  //     });
-  //   });
-  // });
+        expect(htmlbook(source, {"title": "Given Title"}).parse({"complete_html": true})).toEqual(html);
+        done();
+      });
+    });
+  });
 
-  // # -> chapter, ## -> sect1, ### -> sect2
-  // vs
-  // # (n=0)-> chapter, # (n>0) -> sect1, ## -> sect2
-  // it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
-  //   fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
-  //     if (err) throw new Error("Error opening the document");
+  it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
+    fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
+      if (err) throw new Error("Error opening the document");
 
-  //     var result = htmlbook(data, {title: "Open Government Sample"}).parse({"complete_html": true});
+      var result = htmlbook(data, {title: "Open Government Sample"}).parse({"complete_html": true});
 
-  //     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
-  //       expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
-  //       done();
-  //     });
-  //   });
-  // });
+      fs.writeFile("result.html", result);
+
+      fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
+        // expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
+        expect(result).toEqual(html);
+        done();
+      });
+    });
+  });
 
   // it("should be idempotent");
   // it("should also accept HTML documents");
