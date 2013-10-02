@@ -1,13 +1,11 @@
 # Chapter Title
 
-# Heading 1
+## Sect 1
 
-## Heading 2
+### Sect 2
 
-### Heading 3
+#### Sect 3
 
-#### Heading 4
+##### Sect 4
 
-##### Heading 5
-
-###### Heading 6
+###### Sect 5
