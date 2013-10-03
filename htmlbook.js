@@ -10,6 +10,7 @@ var sys = require('sys'),
   complex = schema["xs:schema"]["xs:complexType"],
   S = require('string');
 
+marked.setOptions({gfm: true});
 
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
@@ -53,11 +54,6 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     this.input = input;
     this.depth = 0;
     this.options = {};
-
-    if (helpers.existy(opts) && typeof opts === "object") {
-      this.title = opts.title;
-      this.options = _.extend(this.options, opts);
-    }
   }
 
   HTMLBook.prototype.header_content = function () {
@@ -75,6 +71,8 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     this.first_sect = true;
     this.options.parse = {"complete_html": false}
     if (helpers.existy(opts) && typeof opts === "object") {
+      this.title = opts.title;
+      this.options = _.extend(this.options, opts);
       this.options.parse = _.extend(this.options.parse, opts)
     }
 
@@ -190,5 +188,5 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     return S(output).decodeHTMLEntities().s;
   }
 
-  module.exports = function (str, opts) {return new HTMLBook(str, opts)};
+  module.exports = function (str) {return new HTMLBook(str)};
 }).call(this);

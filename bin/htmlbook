@@ -14,8 +14,10 @@ var switches = [
   ['-h', '--help', 'Shows help sections'],
   ['-s', '--source FILE', 'Source file location relative to cwd'],
   ['-o', '--output FILE', 'Output file location relative to cwd'],
-  ['-l', '--level', 'Specify the heading level to output to'],
-  ['-d', '--debug', 'Show HTMLBook debugging']
+  ['-c', '--complete', 'Return a complete HTMLBook document'],
+  ['-t', '--title TITLE', 'Pass a title to the converter. REQUIRED when creating a complete document.']
+  // ['-l', '--level', 'Specify the heading level to output to'],
+  // ['-d', '--debug', 'Show HTMLBook debugging']
   // ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
 ];
 
@@ -35,16 +37,20 @@ parser.on('source', function (name, value) {
   }
 });
 
+parser.on('title', function (name, value) {
+  options.title = value;
+})
+
+parser.on('complete', function (name, value) {
+  options.complete_html = true;
+})
+
 parser.on('output', function (name, value) {
   output_path = path.join(cwd, value);
 })
 
 parser.on('help', function() {
   sys.puts(parser.toString());
-});
-
-parser.on('debug', function () {
-  options.debug = true;
 });
 
 parser.parse(process.argv);

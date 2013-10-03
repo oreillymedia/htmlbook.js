@@ -37,7 +37,7 @@ describe("htmlbook", function () {
       fs.readFile("spec/documents/all_headings_complete.html", "utf-8", function (err, html) {
         if (err) throw new Error("Error opening html document");
 
-        expect(htmlbook(source, {"title": "Given Title"}).parse({"complete_html": true})).toEqual(html);
+        expect(htmlbook(source).parse({"complete_html": true, "title": "Given Title"})).toEqual(html);
         done();
       });
     });
@@ -47,7 +47,7 @@ describe("htmlbook", function () {
     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
       if (err) throw new Error("Error opening the document");
 
-      var result = htmlbook(data, {title: "Open Government Sample"}).parse({"complete_html": true});
+      var result = htmlbook(data).parse({"complete_html": true, "title": "Open Government Sample"});
 
       fs.writeFile("result.html", result);
 
@@ -59,6 +59,7 @@ describe("htmlbook", function () {
     });
   });
 
+  // it("should throw an error when no title present in complete mode.")
   // it("should be idempotent");
   // it("should also accept HTML documents");
   // it("should properly render self closing tags");
