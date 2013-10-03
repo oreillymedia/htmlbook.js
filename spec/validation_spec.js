@@ -35,4 +35,8 @@ describe("htmlbook validations", function () {
   it("should convert code.md to valid HTMLBook", function (done) {
     convert_and_validate("spec/documents/code.md", done);
   });
+
+  it("should convert math.md to valid HTMLBook", function (done) {
+    convert_and_validate("spec/documents/math.md", done);
+  });
 });
