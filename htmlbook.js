@@ -14,7 +14,8 @@ marked.setOptions({gfm: true});
 
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
-  heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'];
+  heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
+  void_elements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
 
 (function () {
   var helpers = {
@@ -117,30 +118,6 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     return "</" + node.name + ">"
   }
 
-  var section_starter = function (diff, level) {
-    return _.times(diff, function() {return "</section>"}).join("\n") + "\n<section data-type='" + heirarchy[level] + "'>"
-  }
-
-  HTMLBook.prototype.compare_headings = function (book_section, book_heading, html_heading) {
-
-    var book_val = parseInt(book_heading.substr(1));
-    var html_val = parseInt(html_heading.substr(1));
-    var markdown_val = markdown_headers[_.indexOf(htmlbook_headers, html_heading)]
-
-    if (book_val === html_val && book_section === "bookmaindiv"){
-      return {heading:"h1", "closings":"0", heirarchy:0}
-    }
-    else if (book_val === html_val){
-      return {heading: htmlbook_headers[book_val], closings: 1, heirarchy: _.indexOf(heirarchy, "sect"+ book_val)}
-    }
-    else if (book_val < html_val){
-      return {heading: htmlbook_headers[book_val+1], closings: 0, heirarchy: _.indexOf(heirarchy, "sect"+ (book_val+1))}
-    }
-    else if (book_val > html_val){
-      return {heading: "h" + html_val, closings:(book_val - html_val + 1), heirarchy: _.indexOf(heirarchy, "sect"+ html_val)}
-    }
-  }
-
   HTMLBook.prototype.section_start = function (name) {
     var current_section = heirarchy[this.depth];
     var header_depth = _.indexOf(markdown_headers, name);
@@ -178,10 +155,14 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       } else if (_.contains(markdown_headers, node.name)) {
         this.openings += 1;
         output += this.wrap_in_section(node, this.traverse)
+      // If a node has children then it has a starting and closing tag.
       } else if (helpers.existy(node.children)) {
-        // Something here to parse the tag and adjust its attribs to align with
-        //
         output += open_tag(node) + this.traverse(node.children) + close_tag(node);
+      // Void elements
+      } else if (_.contains(void_elements, node.name)) {
+        output += open_tag(node)
+      } else {
+        output += open_tag(node) + close_tag(node);
       }
     }, this);
 

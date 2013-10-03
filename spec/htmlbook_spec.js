@@ -30,6 +30,19 @@ describe("htmlbook", function () {
     });
   });
 
+  it("should not mangle html elements without children", function (done) {
+    fs.readFile("spec/documents/mixins.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening the source document");
+
+      fs.readFile("spec/documents/mixins.html", "utf-8", function (err, html) {
+        if (err) throw new Error("Error opening html document");
+
+        expect(htmlbook(source).parse()).toEqual(html);
+        done();
+      });
+    });
+  });
+
   it("should return complete HTML documents when passed the option", function (done) {
     fs.readFile("spec/documents/all_headings.md", "utf-8", function (err, source) {
       if (err) throw new Error("Error opening source document");
@@ -43,21 +56,21 @@ describe("htmlbook", function () {
     });
   });
 
-  it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
-    fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
-      if (err) throw new Error("Error opening the document");
+  // it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
+  //   fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
+  //     if (err) throw new Error("Error opening the document");
 
-      var result = htmlbook(data).parse({"complete_html": true, "title": "Open Government Sample"});
+  //     var result = htmlbook(data).parse({"complete_html": true, "title": "Open Government Sample"});
 
-      fs.writeFile("result.html", result);
+  //     fs.writeFile("result.html", result);
 
-      fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
-        // expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
-        expect(result).toEqual(html);
-        done();
-      });
-    });
-  });
+  //     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
+  //       // expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
+  //       expect(result).toEqual(html);
+  //       done();
+  //     });
+  //   });
+  // });
 
   // it("should throw an error when no title present in complete mode.")
   // it("should be idempotent");
