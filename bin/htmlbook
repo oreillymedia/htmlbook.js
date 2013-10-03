@@ -65,9 +65,20 @@ if (source_path) {
     var result = htmlbook(data).parse(options);
 
     if (output_path) {
-      fs.writeFile(output_path, html.prettyPrint(result, {indent_size: 2}));
+      fs.writeFile(output_path, result);
     } else {
       sys.puts(result);
     }
   });
+} else {
+  var text = process.argv[process.argv.length-1]
+
+  var result = htmlbook(text).parse(options)
+  if (output_path) {
+    if (output_path) {
+      fs.writeFile(output_path, result);
+    } else {
+      sys.puts(result);
+    }
+  }
 }
