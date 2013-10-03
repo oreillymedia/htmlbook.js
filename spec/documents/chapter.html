@@ -1,0 +1,733 @@
+<h1>Basic Content Elements</h1>
+
+<p>HTML only represents a fraction of the effort that goes into building
+  an effective web site, because the HTML vocabulary that you usually <em>need</em> is
+  small. Altogether that vocabulary amounts to <strong>24 elements</strong> &mdash;
+  all of which are easy to remember and use, and nearly half of which are
+  nearly identical in behavior to other elements on the list.</p>
+<p>Many of these basic elements define structures that are familiar to users
+  of word processing software; in addition to headings they include lists,
+  paragraphs, and in bold/italic formatting.</p>
+<p>There are also two <strong>container</strong> elements that HTML4.01 makes
+  essential to effective stylesheets. In HTML5 those are supplanted by <strong>sectioning</strong> elements,
+  which are introduced here and explained in the Advanced Topics.</p>
+
+<h2>Review and Related Concepts</h2>
+
+<ul class="punchlist">
+  <li>The HTML Vocabulary is large, but the fraction of it that you need to
+    know contains hardly more than a dozen unique elements.</li>
+  <li>The number of non-global attributes that you need to know to use that
+    basic HTML vocabulary can be counted on the fingers of one hand.</li>
+  <li>HTML elements take default style values, which can be overridden with
+    custom CSS.</li>
+  <li>When you use <strong>container elements</strong> well, stylesheets are easier
+    to write.</li>
+  <li>A number of HTML5 elements cover the needs not only of <em>containing</em> content,
+    but also dviding it into <strong>sections</strong> of varying purpose and
+    importance.</li>
+  <li>Headings are used to introduce content at descending levels of scope;
+    the lower the heading level, the narrower the scope of the content it introduces.</li>
+  <li>Inline frames often provide an environment for third-party content like
+    video, social media buttons, and advertising.</li>
+  <li>Web browsers typically support four image formats, each suited to certain
+    uses.</li>
+</ul>
+
+<h2>Hypertext Links: the <code>a</code> Element</h2>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Anchor</td>
+    <td>Required</td>
+    <td><code>href</code> (in practice)</td>
+    <td>Phrasing/inline</td>
+    <td>
+      <ul>
+        <li>Must not contain interactive elements such as form fields</li>
+        <li>Must only contain inline and image elements (HTML4.01)</li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>It could be said that <code>a</code> is the grandaddy of all HTML elements,
+  because &mdash; unlike the others &mdash; it does the work the web was
+  meant for: describing human-readable links to other pages.</p>
+<p>The contents of a link can amount to almost anything, especially in HTML5.</p>
+
+<h3>Attributes</h3>
+
+<ul class="pairings">
+  <li><strong>href</strong><span>Contains a valid URL that defines the destination of the link.</span>
+  </li>
+  <li><strong>rel</strong><span>Takes values that define the relationship of the link to other resources.</span>
+  </li>
+  <li><strong>target</strong><span>Set when the destination of the link should open in an inline frame.  The <code>onclick</code> event handler should be used if the link is to open in a new tab or window.</span>
+  </li>
+  <li><strong>hreflang</strong><span>Declares the language at the destination of the link; best used when the language in question is different than the language of the current page.</span>
+  </li>
+  <li><strong class="html5">type</strong><span>Like the <code>hreflang</code> attribute, <em>advises</em> about the characteristics of the link&rsquo;s destination &mdash; in this case, with respect to MIME type.</span>
+  </li>
+  <li><strong class="html5">media</strong><span>Where <code>type</code> advises about the destination&rsquo;s MIME type, this attribute advises about its intended medium, for example <code>print</code> or <code>screen</code>.</span>
+  </li>
+</ul>
+
+<h3>Publishing Effective Links</h3>
+
+<p>You should remember two rules when publishing a link: to be effective,
+  it must be <strong>recognizable</strong> and <strong>lead to a meaningful destination</strong>.</p>
+<p>A properly signaled link usually relies on two visual cues: color and
+  underlining, these days controlled with the CSS <code>color</code> and <code>text-decoration</code> properties.
+  Other links are instead designed to look like buttons, though they don&rsquo;t
+  often jitter like buttons when followed.</p>
+<p>There is also the navigation area common to most sites, which usually
+  appears in an upper corner of the page, or as a row of links underneath
+  the title of the site.</p>
+
+<h3>Homepage Links and Self-Links</h3>
+
+<p>The title of a site often takes the form of a link back to its homepage.
+  A quick survey of the Google News, NBC News, CNN, Fox News, BBC, and Australian
+  Broadcasting Corporation News sites all demonstrate this behavior, as do
+  popular non-news destinations like Amazon, Wikipedia, and Flickr.</p>
+<p>Older pages also contain links to the pages on which they&rsquo;re published.
+  From time to time you might look at the status bar of your browser and
+  see &ldquo;go to # on this page&rdquo; or something similar, especially
+  on sites meant to function well in older browsers, which provide better
+  scripting interfaces for links than for other elements.</p>
+
+<h2><code>div</code></h2>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Document division</td>
+    <td>Required</td>
+    <td>None, but <code>id</code> or <code>class</code> should usually be present</td>
+    <td>Flow/block</td>
+    <td>None</td>
+  </tbody>
+</table>
+<p>The <code>div</code> element is generic by design, and does a lot of HTML&rsquo;s
+  heavy lifting. Unlike paragraphs, <code>div</code>s don&rsquo;t carry any
+  inherent meaning or default styles, instead relying on their <code>id</code> and <code>class</code> values
+  to offer some kind of clue as to their purpose and appearance.</p>
+<p>When browsers render a <code>div</code> off the bat, the result has no margins
+  and stretches horizontally across the entire canvas.</p>### <code>div</code> and
+the Style Cascade
+<p>In HTML4.01 especially, the purpose of <code>div</code> elements is to serve
+  as <strong>containers</strong> that can be referenced in stylesheet selectors <small>xref</small>.
+  If you create:</p>
+<pre class="code-cutout">&lt;div id=&quot;sidebar&quot;&gt;
+  &lt;p&gt;The bowl was full of &lt;a href=&quot;http://apple.com/&quot;&gt;apples&lt;/a&gt; and &lt;a 
+  href=&quot;http://www.orange.com/&quot;&gt;oranges&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;</pre>
+
+<p>&hellip;You can then create a style rule for all of the hyperlinks that
+  might lie inside <code>#sidebar</code>, like the following:</p>
+<pre class="code-cutout">#sidebar a { color: #633; }</pre>
+
+<p>&hellip;As an alternative to creating a <code>class</code> for all of the
+  links inside of <code>#sidebar</code>.</p>
+
+<h3>Sectioning Elements: <code>header</code>, <code>nav</code>, <code>footer</code>, <code>article</code>, <code>section</code>, and <code>aside</code></h3>
+
+<p>[class=&quot;html5&quot;]</p>
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English names</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Page header, site navigation, page footer, etc.</td>
+    <td>Required</td>
+    <td>None</td>
+    <td>Flow/Block</td>
+    <td>
+      <ul>
+        <li>None, but it&rsquo;s polite to make a habit of putting <code>aside</code> after,
+          or at the end of, <code>article</code>
+        </li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>These elements are functionally identical to <code>div</code>, but they
+  offer something that <code>div</code> doesn&rsquo;t: just as browsers know
+  what to do with lists and form elements, they will eventually be able to
+  do special things with these elements for which <code>div</code> can&rsquo;t
+  provide any baked-in cues.</p>
+<p>Note that the <code>head</code> and <code>header</code> elements are entirely
+  different.</p>
+
+<h4>The &ldquo;HTML5 Shim&rdquo;</h4>
+
+<p>Older versions (6&ndash;8) of Microsoft Internet Explorer don&rsquo;t
+  define the sectioning elements as parts of HTML, and cannot style them
+  off the bat. To fix this problem, several people have written what are
+  called &ldquo;HTML5 Shim&rdquo; utilities with JavaScript. Shim scripts
+  fall into a broader class of scripts called &ldquo;polyfills&rdquo; that
+  aid small tasks or cover gaps in browser support.</p>
+<p>Two especially popular HTML5 Shim scripts can be found at <a class="linkage"
+  href="http://code.google.com/p/html5shim/">http://code.google.com/p/html5shim/</a> and
+  <a
+  class="linkage" href="https://github.com/ahume/html5-shim">https://github.com/ahume/html5-shim</a>.</p>
+
+<h2>Paragraphs</h2>
+
+
+<h3><code>p</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Paragraph</td>
+    <td>Optional</td>
+    <td>None</td>
+    <td>Flow/block</td>
+    <td>
+      <ul>
+        <li>Can only contain phrasing/inline elements, images, and HTML5 A/V elements</li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>When we consider the structure of written language, there&rsquo;s an obvious
+  progression of scope: word, phrase, sentence, paragraph, passage. Because
+  paragraphs are meant to set off discrete ideas, they need to be set off
+  in web documents as in all other kinds&hellip; and that place is carved
+  out by the <code>p</code> element.</p>
+
+<h4>Print Paragraphs and Web Paragraphs</h4>
+
+<p>Web pages <em>scroll</em> while printed pages stand still. This difference
+  explains default paragraph styling in web browsers, where paragraphs are
+  easier to read if they&rsquo;re clearly set apart.</p>
+<p>If you want to attempt a &ldquo;traditional&rdquo; look, apply the following
+  CSS rule:</p>
+<pre class="code-cutout">p { margin: 0; text-indent: 1.618em; text-align: justify; }</pre>
+
+
+<h3>Introducing Collapsed Margins and Resets</h3>
+
+<p>When two HTML elements with non-zero margins lie aside one another, whether
+  in a stack or a row, those margins <strong>collapse</strong> so that only
+  the larger of the two parallel margins is visible on the rendered page.
+  Since this behavior makes it more difficult to control page layout, professional
+  developers often create what they call <strong>reset styles</strong>.</p>
+<p>This author doesn&rsquo;t use reset styles, for one reason: they rely
+  on <em>negation</em>, even where <em>consistency</em> is more desirable.</p>
+
+<h2>Headings</h2>
+
+
+<h3><code>h1</code> &hellip; <code>h6</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Heading (level 1&ndash;6)</td>
+    <td>Required</td>
+    <td>None</td>
+    <td>Flow/Block (heading)</td>
+    <td>
+      <ul>
+        <li>The levels of successive headings within the same parent element should
+          always descend.</li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>Pages need titles, but the same is true of individual document sections,
+  which is where headings come in. Well-composed headings can <strong>break up your content</strong> to
+  make it both more readable, and more legible. More importantly, they also
+  help the <strong>search engine performance</strong> of your pages.</p>
+<p><code>h1</code> elements are most-significant; there should only be one
+  on each page. The <code>h4</code> element, on the other hand has always been
+  styled by default at the same size as normal text, so it might be better
+  to use <code>h3</code> or <code>h4</code> as your most typical heading level,
+  then increase heading levels further as their scope broadens. <small>See attached illustration.</small>
+</p>
+
+<h3>Yes, Headings Are Ugly</h3>
+
+<p>Like word processors, web browsers tend to make the higher-level headings
+  too big. The good news is that CSS allows you control the appearance of
+  headings with the <code>font-size</code>  <small>xref</small>, <code>font-weight</code>  <small>xref</small>,
+  and <code>margin</code>  <small>xref</small> properties.</p>
+
+<h3>Using More Than One Typeface on a Page</h3>
+
+<p>A common design technique in practically all textual media is to use one
+  style of type for body copy, and another style for headings &mdash; for
+  example, setting a newspaper article in Times or Palatino, while setting
+  its title in Helvetica or Univers. The CSS <code>font-family</code> property <small>xref</small> and <code>@font-face</code> rule
+  syntax <small>xref</small> allow you to do the same thing on your pages.</p>
+
+<h2>Lists</h2>
+
+
+<h3><code>ul</code> and <code>ol</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Unordered / ordered list</td>
+    <td>Required</td>
+    <td>None</td>
+    <td>Flow/block (list)</td>
+    <td>
+      <ul>
+        <li>Must only contain list item (<code>li</code>) elements <small>xref</small> (which
+          in turn are more flexible) and whitespace</li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>We constantly encounter lists: to-do lists, shopping lists, feature lists,
+  Top Ten lists&hellip; so lists were an obvious feature when Tim Berners-Lee
+  started to create the technologies that we now call the web.</p>
+<p>Web browsers support three explicit types of lists, of which two &mdash;
+  unordered and ordered lists &mdash; are under discussion here. The only
+  differences between these two are their tags (<code>ul</code> and <code>ol</code>)
+  and the markers that are displayed when you use one or the other (bullets
+  as opposed to numerals or letters).</p>
+<p>Navigation links in HTML4.01 pages are often marked up within lists, which
+  can be skipped or ignored by assistive technology.</p>
+
+<h4>Attributes (HTML4.01 only)</h4>
+
+<ul class="pairings">
+  <li><strong>type</strong><span>Takes the enumerated values <code>1</code>, <code>I</code>, <code>i</code>, <code>A</code>, and <code>a</code>. The <code>list-style-type</code> CSS property <small>xref</small> should be preferred whenever possible.</li>
+    <li><strong>start</strong><span>When used with an integer value, changes the numbering of all the items on the list. Supplanted by CSS3 Lists and Numbering, which are notoriously difficult to understand.</li>
+</ul>
+
+### Choosing the Correct List Type
+
+<p>Instinct usually offers the right judgement of the type of list that ought to be used in a particular situation.  The best thing to remember is that when an order is clearly meant, an ordered list should be used.</p>
+
+<h3>Markers and Margins</h3>
+<p>This author often uses CSS rules similar to what follows:</p>
+<pre class="code-cutout">ul { padding-left: .618em; list-style-type: none; }
+li { text-indent: -.618em; }</pre>
+<p>The default browser style typically left-justifies list item <em>content</em> and right-justifies list markers, both to a common margin.
+<p>Many browsers set the default <code>padding-left</code> value of lists to an absolute rather than proportional value, so lists set with an especially large or small <code>font-size</code> value might require some tweaking in this regard.</p>
+
+<h2>List Items</h2>
+<h3><code>li</code></h3>
+<table>
+    <col id="engName" />
+    <col id="endTag" />
+    <col id="reqdAttr" />
+    <col id="elementType" />
+    <col id="elementReqs" />
+    <thead>
+        <th>English name</th>
+        <th>Closing tag</th>
+        <th>Required attributes</th>
+        <th>Type</th>
+        <th>Notable Requirements</th>
+    </thead>
+    <tbody>
+        <td>List item</td>
+        <td>Optional</td>
+        <td>None</td>
+        <td>Flow/block (list item)</td>
+        <td>
+            <ul>
+                <li>Must only have a <code>ul</code> or <code>ol</code> element as an immediate parent</li>
+                <li>Must only have other <code>li</code> elements for siblings</li>
+            </ul>
+        </td>
+    </tbody>
+</table>
+
+<p>List items are simple at first glance but don&rsquo;t always stay that way, because lots of things can &mdash; and should &mdash; be drawn up in lists.  <strong>Outlines</strong> are nested lists.  <strong>Rules</strong> or <strong>guidelines</strong> of conduct or procedure often appear in lists, contain multiple paragraphs (or even sections), and might require headings.  <strong>Site navigation</strong> is often presented in lists for accessibility reasons.</p>
+<p>List items require flexibility, so the specifications treat them like page divisions and sections: pretty much anything goes with respect to their contents.</p>
+
+<h4>Attributes</h4>
+
+<ul class="pairings">
+    <li><strong>start</strong><span>Takes an integer value; when used within an ordered list, changes the numbering of that item and all successive list items. (HTML4.01 only)</li>
+</ul>
+
+<h3>Nesting Lists</h3>
+<p>To create a nested list, put a new list <em>inside</em> a list item, like this:</p>
+<pre class="code-cutout">&lt;ul&gt;
+  &lt;li&gt;Berries
+    &lt;ul&gt;&lt;li&gt;Blackberries&lt;/li&gt;&lt;li&gt;Strawberries&lt;/li&gt;&lt;li&gt;Raspberries&lt;/li&gt;&lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Orchard fruit
+    &lt;ul&gt;&lt;li&gt;Apples&lt;/li&gt;&lt;li&gt;Pears&lt;/li&gt;&lt;li&gt;Plums&lt;/li&gt;&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</pre>
+<p><small>I&rsquo;ve collapsed my carriage returns here, but it might be possible to set it differently in production.</small></p>
+<p>The outermost list will have top and bottom margins as usual, but the nested lists will not.</p>
+<p>The markup pattern shown above can recurse as many times as needed; this author has created his share of lists nested six and seven levels deep.</p>
+
+<h2>Images</h2>
+<h3><code>img</code></h3>
+<table>
+    <col id="engName" />
+    <col id="endTag" />
+    <col id="reqdAttr" />
+    <col id="elementType" />
+    <col id="elementReqs" />
+    <thead>
+        <th>English name</th>
+        <th>Closing tag</th>
+        <th>Required attributes</th>
+        <th>Type</th>
+        <th>Notable Requirements</th>
+    </thead>
+    <tbody>
+        <td>Image</td>
+        <td>Forbidden</td>
+        <td>
+            <ul>
+                <li><code>src</code></li>
+                <li><code>alt</code></li>
+            </ul>
+        </td>
+        <td>Embedded/replaced</td>
+        <td>
+            <ul>
+                <li><code>alt</code> must be present, but its value should be left empty (i.e., <code>alt=&quot;&quot;</code>) if the image cannot be assigned a meaningful text description</li>
+            </ul>
+        </td>
+    </tbody>
+</table>
+
+<p>Like most of the other elements introduced in this section, the <code>img</code> element is pretty simple if you want it that way:  reference a valid image URL with the <code>src</code> attribute, and the browser will insert the image it finds at that location onto the page.</p>
+
+<h4>Attributes</h4>
+<ul class="pairings">
+    <li><strong>src</strong><span>a valid URL referencing the image to be rendered; can be either an <code>http://</code> or <code>data:</code> URL</span>
+  </li>
+  <li><strong>alt</strong><span>a string that provides a text description of the image</span>
+  </li>
+  <li><strong>width</strong><span>an integer or percentage value; integers are parsed as the desired display width in pixels, percentages as the desired proportion of the display width encoded in the image</span>
+  </li>
+  <li><strong>height</strong><span>comparable to <code>width</code></span>
+  </li>
+</ul>
+<p>Current web browsers all support images encoded in the PNG (Portable Network
+  Graphics), GIF (Graphics Interchange Format), JPEG (Joint Photographic
+  Experts Group), and SVG (Scalable Vector Graphics) formats. The filenames
+  of images encoded in these formats typically end in <code>.png</code>, <code>.gif</code>, <code>.jpg</code>,
+  and <code>.svg</code> respectively.</p>
+
+<h3>Things to Remember About Images</h3>
+
+<ul class="punchlist">
+  <li>If an image request returns a Not Found (404) error or a corrupt stream,
+    browsers typically render the image&rsquo;s <code>alt</code> value in its
+    place.</li>
+  <li>For best results, <code>width</code> and <code>height</code> values should
+    be provided as integers (representing pixels) to avoid undesirable layout
+    effects.</li>
+  <li>The <code>img</code> element should be used for unambiguous <em>content</em>,
+    and design accents relegated to CSS <code>background-image</code> attributes.</li>
+  <li>The four formats described above are each best suited to specific types
+    of presentation: PNG when a transparent canvas/matte is called for, GIF
+    to flat-color illustrations like infographics and cartoons, JPEG to photography
+    and &ldquo;photorealistic&rdquo; illustrations, and SVG to vector drawings
+    and vector animations. GIF images can also be animated, but often consume
+    more network resources than an equivalent SVG or Flash presentation.</li>
+  <li>SVG images can be exported to a raster format (PNG, GIF, JPEG) without
+    loss of quality at a given size, but exports in the opposite direction
+    cannot.</li>
+  <li>JPEG compression is &ldquo;lossy&rdquo; so that all other factors being
+    equal, an image exported to the JPEG format will result in lower image
+    fidelity.</li>
+  <li>Resized copies of raster images will always be of lower quality than the
+    originals, but good tools offer ways to minimize this loss of quality.</li>
+  <li>Used properly, <code>data</code>-URL encoded PNGs can conserve network
+    resources, thus reducing page render time. <code>data</code>-URL encoding
+    is discussed in the Advanced Topics.</li>
+</ul>
+
+<h2>Inline Frames</h2>
+
+
+<h3><code>iframe</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Inline frame</td>
+    <td>Required</td>
+    <td>
+      <ul>
+        <li><code>src</code>
+        </li>
+        <li><code>width</code>
+        </li>
+        <li><code>height</code>
+        </li>
+      </ul>
+    </td>
+    <td>Embedded/replaced</td>
+    <td>
+      <ul>
+        <li>CSS, JavaScript, and hypertext links cannot interact with <code>iframe</code> content
+          from a different domain than the site that publishes the <code>iframe</code> itself</li>
+      </ul>
+    </td>
+  </tbody>
+</table>
+<p>The <code>iframe</code> element lays out like images in practice, you won&rsquo;t
+  often see <code>iframe</code> elements containing pages that are served from
+  the same site that serves the element itself. However, there are a lot
+  of pages with inline frames in them, because they make excellent containers
+  for third-party content like advertising and social media buttons.</p>
+
+<h4>Attributes</h4>
+
+<ul class="pairings">
+  <li><strong>src</strong><span>the URL of the page to be served in the inline frame</span>
+  </li>
+  <li><strong>width</strong><span>the width in pixels of the inline frame</span>
+  </li>
+  <li><strong>height</strong><span>the height in pixels of the inline frame</span>
+  </li>
+  <li><strong>name</strong><span>a string that allows the inline frame to respond to hypertext links with <code>target</code> values indentical to the value set on this attribute</span>
+  </li>
+</ul>
+<p>This list omits several attributes that are either too new to be supported
+  broadly, too esoteric to justify inclusion in this book, or supplanted
+  by CSS properties.</p>
+
+<h3>Using Inline Frames</h3>
+
+<p>Inline frames can be used to break many of the assumptions under which
+  web browsers work, but they have one outstanding feature: they can be used
+  to take content from Site &rdquo;B&rdquo; &mdash; often an advertisement
+  or a video &mdash; for secure display in the visual context of Site &rdquo;A&rdquo;,
+  presumably yours.</p>
+<p>The most obvious purpose of an <code>iframe</code> is to create a single
+  instance of a persistent site feature for repetition throughout the site,
+  but there are other ways to do this that don&rsquo;t violate any of the
+  assumptions under which web browsers operate <small>xref</small>.</p>
+
+<h2>Emphasis and Strong Emphasis</h2>
+
+
+<h3><code>em</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Emphasis</td>
+    <td>Required</td>
+    <td>None</td>
+    <td>Phrasing/Inline</td>
+    <td>None</td>
+  </tbody>
+</table>
+<p>The <code>em</code> element conveys emphasis of a word, phrase, or sentence.
+  In visual (<code>screen, print</code>) media, this usually takes the form
+  of italic or oblique (skewed-clockwise) text. Where present emphasis is
+  especially valuable to assistive technology users, who will instantly know
+  the difference between emphasis and text that&rsquo;s italicized for other
+  reasons.</p>
+<p>Underlined text can also suggest emphasis, but this should be avoided
+  since underlines are traditionally used to identify hypertext links.</p>
+
+<h3><code>strong</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Strong emphasis</td>
+    <td>Required</td>
+    <td>None</td>
+    <td>Phrasing/inline</td>
+    <td>None</td>
+  </tbody>
+</table>
+<p>As its long-form name suggests, the <code>strong</code> element conveys
+  even stronger emphasis than the <code>em</code> element. The typical visual
+  styling for this element is bold text.</p>
+<p><code>strong</code> elements should be preferred to <code>b</code> elements
+  where appropriate, for the same reasons that <code>em</code> should be preferred
+  to <code>i</code>.</p>
+<p>Full capitalization offers another popular way to convey strong emphasis
+  in text is full capitalization, but this should also be avoided, since
+  long stretches of all-caps are harder to read than mixed-case text.</p>
+<p>Other practical styling possibilities for all forms of emphasis are increased
+  size and increased contrast, which are controlled with the <code>font-size</code>, <code>color</code>,
+  and <code>background-color</code> CSS properties.</p>
+
+<h2>Small text and Spans</h2>
+
+
+<h3><code>small</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <tr>
+      <th>English name</th>
+      <th>Closing tag</th>
+      <th>Required attributes</th>
+      <th>Type</th>
+      <th>Notable Requirements</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Small text</td>
+      <td>Required</td>
+      <td>None</td>
+      <td>Phrasing/inline</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</table>
+<p>There are elements to provide emphasis, but what about de-emphasis, like
+  spoken comments that would be made <i>sotto voce</i>? This voice is best
+  taken up with the <code>small</code> element, and like its emphasized cousins,
+  its default styles can be replaced with styles that reduce contrast rather
+  than size.</p>
+<p>This author is deluged with a stream of consciousness that tends to overrun
+  its banks, so a visit to the product site for this book will probably uncover
+  a few examples of this usage.</p>
+
+<h3><code>span</code></h3>
+
+<table>
+  <col id="engName" />
+  <col id="endTag" />
+  <col id="reqdAttr" />
+  <col id="elementType" />
+  <col id="elementReqs" />
+  <thead>
+    <th>English name</th>
+    <th>Closing tag</th>
+    <th>Required attributes</th>
+    <th>Type</th>
+    <th>Notable Requirements</th>
+  </thead>
+  <tbody>
+    <td>Generic span</td>
+    <td>Required</td>
+    <td>None (but <code>class</code> is likely)</td>
+    <td>Phrasing/inline</td>
+    <td>None</td>
+  </tbody>
+</table>
+<p>Like its counterpart <code>div</code>  <small>xref</small>, <code>span</code> is
+  a generic element most often used to attach JavaScript hooks or CSS selectors
+  to a particular stretch of content, or spot on the page.</p>
+<p>Another use for <code>span</code> is to avoid <strong>anonymous elements</strong>.
+  Consider something like:</p>
+<pre class="code-cutout">&lt;div class=&quot;photo-with-caption&quot;&gt;&lt;img src=&quot;photo1.jpg&quot; width=&quot;192&quot; height=&quot;144&quot; 
+alt=&quot;A smiling face.&quot;&gt;Supporters greet the candidate at the airport.&lt;/div&gt;</pre>
+
+<p>This use of markup is considered a best practice in HTML4.01, but presents
+  enough problems that the <code>figure</code>/<code>img</code>/<code>figcaption</code> complex <small>xref</small> was
+  specified for HTML5. The text content of the example is rendered in a separate
+  element, but that element is never exposed to CSS or JavaScript. Why allow
+  that, when you can put an element of your own in there?</p>

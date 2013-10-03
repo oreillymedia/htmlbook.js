@@ -14,15 +14,16 @@ var switches = [
   ['-h', '--help', 'Shows help sections'],
   ['-s', '--source FILE', 'Source file location relative to cwd'],
   ['-o', '--output FILE', 'Output file location relative to cwd'],
-  ['-l', '--level', 'Specify the heading level to output to'],
-  ['-d', '--debug', 'Show HTMLBook debugging'],
-  ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
+  ['-c', '--complete', 'Return a complete HTMLBook document'],
+  ['-t', '--title TITLE', 'Pass a title to the converter. REQUIRED when creating a complete document.']
+  // ['-l', '--level', 'Specify the heading level to output to'],
+  // ['-d', '--debug', 'Show HTMLBook debugging']
+  // ['-m', '--markdown', 'Include this flag to conver the source from Markdown'],
 ];
 
 // Create a new OptionParser.
 var parser = new optparse.OptionParser(switches);
 var source_path, output_path, options = {
-  'sourceFormat': 'html',
   'debug': false
 };
 
@@ -36,20 +37,20 @@ parser.on('source', function (name, value) {
   }
 });
 
+parser.on('title', function (name, value) {
+  options.title = value;
+})
+
+parser.on('complete', function (name, value) {
+  options.complete_html = true;
+})
+
 parser.on('output', function (name, value) {
   output_path = path.join(cwd, value);
 })
 
 parser.on('help', function() {
   sys.puts(parser.toString());
-});
-
-parser.on('markdown', function() {
-  options.sourceFormat = 'markdown';
-});
-
-parser.on('debug', function () {
-  options.debug = true;
 });
 
 parser.parse(process.argv);
@@ -64,9 +65,20 @@ if (source_path) {
     var result = htmlbook(data).parse(options);
 
     if (output_path) {
-      fs.writeFile(output_path, html.prettyPrint(result, {indent_size: 2}));
+      fs.writeFile(output_path, result);
     } else {
       sys.puts(result);
     }
   });
+} else {
+  var text = process.argv[process.argv.length-1]
+
+  var result = htmlbook(text).parse(options)
+  if (output_path) {
+    if (output_path) {
+      fs.writeFile(output_path, result);
+    } else {
+      sys.puts(result);
+    }
+  }
 }

@@ -1,7 +1,7 @@
 {
   "name": "htmlbook",
-  "version": "0.0.8",
-  "description": "HTML to HTMLBook parser",
+  "version": "0.1.0",
+  "description": "Markdown to HTMLBook converter",
   "main": "./htmlbook.js",
   "bin": {
     "htmlbook": "bin/htmlbook"
@@ -13,13 +13,19 @@
     "type": "git",
     "url": "https://github.com/oreillymedia/htmlbook.js"
   },
-  "keywords": ["htmlbook"],
+  "keywords": ["htmlbook", "markdown"],
   "author": "O'Reilly Media",
   "license": "MIT",
   "dependencies": {
-    "jquery": "1.8.3",
     "marked": "0.2.9",
     "optparse": "1.0.4",
-    "html": "0.0.7"
+    "html": "0.0.7",
+    "underscore": "1.5.2",
+    "htmlparser2": ""
+  },
+  "devDependencies": {
+    "xml2js": "0.2.8",
+    "jasmine-node": "1.11.0",
+    "string": "1.6.0"
   }
 }

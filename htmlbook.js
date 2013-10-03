@@ -1,247 +1,200 @@
-!(function () {
-  function HTMLBook(source) {
-    this.source = source;
+var sys = require('sys'),
+  fs = require('fs'),
+  util = require('util'),
+  _ = require('underscore'),
+  htmlparser = require('htmlparser2'),
+  html = require('html'),
+  marked = require('marked'),
+  schema = require('./schema'),
+  elements = schema["xs:schema"]["xs:element"],
+  complex = schema["xs:schema"]["xs:complexType"],
+  S = require('string');
 
-    // Detect if module is being run from the browser or a Node environment and
-    // set up a standard logging platform for both as well as requiring
-    // dependencies properly.
-    if (typeof module !== 'undefined'  && typeof module.exports !== 'undefined') {
-      var sys = require('sys');
-      this.log = function (message) {
-        sys.puts(message);
-      }
-      // If this is
-      this.$ = require('jquery');
-      this.marked = require('marked');
-    }
-    else {
-      this.$ = $;
-      this.marked = marked;
-      this.log = function (message) {
-        console.log(message);
-      }
-    }
+marked.setOptions({gfm: true});
 
-    this.marked.setOptions({
-      gfm: true
+var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
+  htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
+  heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
+  void_elements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
+
+(function () {
+  var helpers = {
+    existy: function (x) {
+      return x != null;
+    },
+    // Converts an integer to 2 space indentation.
+    indentation: function (n) {
+      return _.times(n, function () {
+        return "  "
+      }).join("")
+    },
+    get_language: function (str) {
+      if (!this.existy(str)) return "";
+      match = str.match(/lang\-(\S*)/);
+
+      if (this.existy(match)) {
+        return match[1]
+      } else {
+        return "";
+      }
+    },
+    attribs_to_string: function (obj) {
+      if (!this.existy(obj))
+        return ""
+
+      return _.reduce(_.pairs(obj), function (memo, v) {
+        if (this.existy(v[1]) && v[1].length > 0)
+          return memo + " " + v[0] + "='" + v[1]+ "'"
+        else
+          return memo
+      }, "", this);
+    }
+  }
+
+  var normalize_headings = function (arr) {
+    return _.map(arr, function (n, i) {
+      if (i == 0)
+        return n
+      else if (n > arr[i-1]+1)
+        return arr[i-1] + 1
+      else
+        return n
     });
   }
 
-  var hp = HTMLBook.prototype = {
-    parse: function () {
-      var body = this.$('<body>').append(this.source),
-        children = body.children(),
-        args = Array.prototype.slice.call(arguments),
-        options = {
-          debug: true,
-          fragment: true,
-          level: htmlbook_spec.chapter,
-          sourceFormat: 'html'
-        },
-        logs = [];
+  var concat_times = function (n, str, connector) {
+    return _.times(n, function () {
+      return str
+    }).join(connector)
+  }
 
-      // parse arguments and merge with options
-      if (args.length == 1 && typeof args[0] === 'object') {
-        options = this.$.extend(options, args[0]);
+  var close_sections = function (o, c) {
+    return concat_times(o - c, "</section>", "\n");
+  }
 
-        if (typeof htmlbook_spec[options.level] !== 'undefined') {
-          options.level = htmlbook_spec[options.level];
-        } else {
-          logs.push("please specify a valid htmlbook level. defaulting to chapter");
-          options.level = htmlbook_spec.chapter;
-        }
+  function HTMLBook (input, opts) {
+    this.input = input;
+    this.depth = 0;
+    this.options = {};
+  }
 
-        if (options.debug === false) {
-          this.log = function (message) {
-            return message;
-          }
-        }
+  HTMLBook.prototype.header_content = function () {
+    if (!helpers.existy(this.title)) throw new Error("No title provided.")
 
-        if (options.sourceFormat === 'markdown') {
-          children = this.$('<body>').append(this.marked(this.source)).children();
-        }
+    return '<?xml version="1.0" encoding="utf-8"?>\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml" lang="en">\n<head>\n<title>' + this.title + '</title>\n</head>\n<body data-type="book">\n<h1>' + this.title + '</h1>\n';
+  }
+
+  HTMLBook.prototype.footer_content = function () {
+    return "\n</body>\n</html>";
+  }
+
+  // Parse the html input and pass off to the traverse callback
+  HTMLBook.prototype.parse = function (opts) {
+    this.first_sect = true;
+    this.options.parse = {"complete_html": false}
+    if (helpers.existy(opts) && typeof opts === "object") {
+      this.title = opts.title;
+      this.options = _.extend(this.options, opts);
+      this.options.parse = _.extend(this.options.parse, opts)
+    }
+
+    if (!helpers.existy(this.input)) throw new Error("No content");
+    this.closings = 0;
+    this.openings = 0;
+    this.first_heading = true;
+    this.first_sect1 = false;
+    var handler = new htmlparser.DomHandler(function (error, dom) {
+      if (error) {
+        console.log('error dog');process.exit(1)
       }
+    });
+    var parser = new htmlparser.Parser(handler);
+    parser.write(marked(this.input));
+    parser.end();
 
-      if (options.fragment) {
-        return this.parse_html(children, options.level);
-      } else {
-        return skeleton.header + this.parse_html(children, options.level) + skeleton.footer;
-      }
-    },
-
-    // parse_html - recursive part of this library, takes an amount of html,
-    // looks at top level header, and looks for a sub-section. if there's a
-    // subsection, call this again.
-    // content: jQuery collection where the first element is a header.
-    parse_html: function (content, htmlbooklevel) {
-      if (!(htmlbooklevel != null)) {
-        return content;
-      }
-
-      this.log("\n>>> Making section " + htmlbooklevel.name);
-      // initialize variables
-      var section;
-      var next_section = '';
-
-      // Take the input, wrap it in a div and then get the children. In this way
-      // if 'content' is a string it will be converted into a jQuery object and
-      // if it's already a jQuery object everything is fine.
-      var wrap = this.$('<div>').html(content);
-      var children = wrap.children();
-
-      if (children.length === 0) { return ''; }
-
-      // Do some analysis on the first element. HTMLBook is pretty strict as to
-      // what the first element should be: either a heading or a div must start
-      // a new section. If the element is neither of those, assume we have inner
-      // section content.
-      var first_element = this.deconstruct_heading(children.first(), htmlbooklevel);
-
-      // are there more headings?
-      if (first_element != false) {
-        this.log("found a heading as the first element")
-        var more_headings = this.find_headings(content, first_element.tag_name);
-        var arr = this.wrap_in_section(htmlbooklevel, children, first_element, more_headings);
-        section = arr[0];
-        next_section = arr[1];
-      } else {
-        var rest = content.splice(1);
-        var first = content;
-        var section_content;
-        this.log('no more headings in this branch.');
-        section_content = this.$('<div>').html(first).html() + this.parse_html(rest, htmlbooklevel);
-
-        section = this.$('<div>').html(section_content).html();
-      }
-
-      return this.$('<div>').html(section).html() + next_section;
-    },
-
-     wrap_in_section: function (htmlbooklevel, children, first_element, more_headings) {
-      var subheading, next_heading_index, nested_element_count, section_content, next_section = ''
-
-      if (more_headings == 'samelevel') {
-        subheading = htmlbook_spec[htmlbooklevel.child];
-        next_heading_index = this.$('<div>').html(children).find(first_element.tag_name+':gt(0)').first().index();
-        nested_element_count = next_heading_index - 1;
-
-        section_content = this.parse_html(children.splice(1, nested_element_count), subheading);
-        next_section = this.parse_html(children.splice(1), htmlbooklevel);
-      } else if (more_headings == 'subheadings') {
-        subheading = htmlbook_spec[htmlbooklevel.child];
-        this.log('sub headings');
-        section_content = this.parse_html(children.splice(1), subheading);
-      } else {
-        // There are no other headings, so the work is done.
-        this.log("no more headings in the document.");
-        section_content = children.splice(1);
-      }
-
-      section = this.$('<section data-type="' + htmlbooklevel.name + '">');
-      section.append(first_element.html).append(section_content);
-
-      return [section, next_section];
-    },
-
-    find_headings: function (content, parent_tag_name) {
-      var content = this.$(content).clone().splice(1);
-      var wrap = this.$('<div>').html(content);
-      var heading_index = parseInt(parent_tag_name.substr(1));
-      var subheadings = this.$(wrap).find('h' + (heading_index+1));
-
-      if (heading_index == 6) {
-        return false;
-      } else if (this.$(wrap).find(parent_tag_name).length > 0) {
-        return 'samelevel';
-      } else if (subheadings.length > 0) {
-        return 'subheadings';
-      } else {
-        return false;
-      }
-    },
-
-    deconstruct_heading: function (heading, htmlbooklevel) {
-      var tag_name = heading.prop('tagName');
-      if (tag_name.match(/H[1-6]/) == null) {
-        return false;
-      } else {
-        return {
-          'tag_name': tag_name,
-          'heading': htmlbooklevel.heading,
-          'level': htmlbooklevel.name,
-          'content': heading.html(),
-          'html': '<' + htmlbooklevel.heading + '>' + heading.html() + '</' + htmlbooklevel.heading + '>'
-        }
-      }
+    if (this.options.parse.complete_html === true) {
+      return this.header_content() + this.traverse(handler.dom) + close_sections(this.openings, this.closings) + this.footer_content();
+    }
+    else {
+      return this.traverse(handler.dom) + close_sections(this.openings, this.closings);
     }
   }
 
-  function Export(str) {
-    return new HTMLBook(str);
-  };
-
-  var skeleton = {
-  'header': '<!DOCTYPE html><html xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/1999/xhtml ../schema/htmlbook.xsd" xmlns="http://www.w3.org/1999/xhtml"><head><title>HTMLBook Sample</title><meta name="HTMLBook Sample" content="text/html; charset=utf-8" /></head><body data-type="book" class="book" id="htmlbook">',
-  'footer': '</body></html>'
+  // Construct an opening tag with the specified attributes.
+  var open_tag = function (node) {
+    return "<" + node.name + helpers.attribs_to_string(node.attribs) + ">"
   }
 
-  var htmlbook_spec = {
-    'book': {
-      name: 'book',
-      parent: false,
-      child: 'chapter',
-      heading: 'h1',
-      level: 0
-    },
-    'chapter': {
-      name: 'chapter',
-      parent: 'book',
-      child: 'sect1',
-      heading: 'h1',
-      level: 1
-    },
-    'sect1': {
-      name: 'sect1',
-      parent: 'chapter',
-      child: 'sect2',
-      heading: 'h1',
-      level: 2
-    },
-    'sect2': {
-      name: 'sect2',
-      parent: 'sect1',
-      child: 'sect3',
-      heading: 'h2',
-      level: 3
-    },
-    'sect3': {
-      name: 'sect3',
-      parent:'sect2',
-      heading: 'h3',
-      level: 4
-    },
-    'sect4': {
-      name: 'sect4',
-      parent:'sect3',
-      child: false,
-      heading: 'h4',
-      level: 5
-    }
-  }
-
-  // EXPORTS from string.js
-  if (typeof module !== 'undefined'  && typeof module.exports !== 'undefined') {
-    module.exports = Export;
-
-  } else {
-
-    if(typeof define === "function" && define.amd) {
-      define([], function() {
-        return Export;
-      });
+  var void_tag = function (node) {
+    if (node.name === "input") {
+      return "<div><" + node.name + helpers.attribs_to_string(node.attribs) + "/></div>";
     } else {
-      window.HTMLBook = Export;
+      return "<" + node.name + helpers.attribs_to_string(node.attribs) + "/>"
     }
   }
 
+  var close_tag = function (node) {
+    return "</" + node.name + ">"
+  }
+
+  HTMLBook.prototype.section_start = function (name) {
+    var current_section = heirarchy[this.depth];
+    var header_depth = _.indexOf(markdown_headers, name);
+    var new_section = heirarchy[header_depth];
+    var closings = 0;
+
+    if (this.depth === header_depth) {
+      closings = (this.first_sect === true) ? 0 : 1;
+      this.first_sect = false;
+    } else if (this.depth < header_depth) {
+      this.depth += 1;
+    } else if (this.depth > header_depth) {
+      closings = this.depth - header_depth + 1;
+      this.depth = header_depth;
+    }
+
+    this.closings += closings
+
+    return _.times(closings, function() {return "</section>\n"}).join("") + "<section data-type='" + heirarchy[this.depth] + "'>\n";
+  }
+
+  HTMLBook.prototype.wrap_in_section = function (node, callback) {
+    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + ">" + callback(node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
+  }
+
+  HTMLBook.prototype.traverse = function (dom_tree, htmlbook_tracker) {
+    output = ""
+
+    _.forEach(dom_tree, function (node, i) {
+      // When the node is a text type, it has no children, just return it.
+      if (node.type === "text") {
+        output += node.data
+      // Markdown doesn't convert pre blocks the way we would like, so let's
+      // step in and make it all work.
+      } else if (node.name === "pre" && node.children.length === 1 && node.children[0].name === "code") {
+        // Attempt to distinguish between "code" <pre> blocks and other <pre>s
+        var code = node.children[0]
+        node.attribs["data-code-language"] = helpers.get_language(code.attribs["class"])
+        node.attribs["data-type"] = "programlisting";
+        output += open_tag(node) + this.traverse(code.children) + close_tag(node);
+      // Check to see if this node is a header, which should signal the start // of a new section.
+      } else if (_.contains(markdown_headers, node.name)) {
+        this.openings += 1;
+        output += this.wrap_in_section(node, this.traverse)
+      // If a node has children then it has a starting and closing tag.
+      } else if (node.children.length !== 0) {
+        output += open_tag(node) + this.traverse(node.children) + close_tag(node);
+      // Void elements
+      } else if (_.contains(void_elements, node.name)) {
+        output += void_tag(node)
+      // Everything else, typically empty elements with no children.
+      } else {
+        output += open_tag(node) + close_tag(node);
+      }
+    }, this);
+
+    return S(output).decodeHTMLEntities().s;
+  }
+
+  module.exports = function (str) {return new HTMLBook(str)};
 }).call(this);
