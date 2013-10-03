@@ -31,4 +31,8 @@ describe("htmlbook validations", function () {
   it("should convert mixins.md to valid HTMLBook", function (done) {
     convert_and_validate("spec/documents/mixins.md", done);
   });
+
+  it("should convert code.md to valid HTMLBook", function (done) {
+    convert_and_validate("spec/documents/code.md", done);
+  });
 });

@@ -27,6 +27,27 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       return _.times(n, function () {
         return "  "
       }).join("")
+    },
+    get_language: function (str) {
+      if (!this.existy(str)) return "";
+      match = str.match(/lang\-(\S*)/);
+
+      if (this.existy(match)) {
+        return match[1]
+      } else {
+        return "";
+      }
+    },
+    attribs_to_string: function (obj) {
+      if (!this.existy(obj))
+        return ""
+
+      return _.reduce(_.pairs(obj), function (memo, v) {
+        if (this.existy(v[1]) && v[1].length > 0)
+          return memo + " " + v[0] + "='" + v[1]+ "'"
+        else
+          return memo
+      }, "", this);
     }
   }
 
@@ -99,26 +120,16 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     }
   }
 
-  // Converts an object of attributes to a string.
-  var attribs_to_string = function (obj) {
-    if (!helpers.existy(obj))
-      return ""
-
-    return _.reduce(_.pairs(obj), function (memo, v) {
-      return memo + " " + v[0] + "='" + v[1]+ "'"
-    }, "");
-  }
-
   // Construct an opening tag with the specified attributes.
   var open_tag = function (node) {
-    return "<" + node.name + attribs_to_string(node.attribs) + ">"
+    return "<" + node.name + helpers.attribs_to_string(node.attribs) + ">"
   }
 
   var void_tag = function (node) {
     if (node.name === "input") {
-      return "<div><" + node.name + attribs_to_string(node.attribs) + "/></div>";
+      return "<div><" + node.name + helpers.attribs_to_string(node.attribs) + "/></div>";
     } else {
-      return "<" + node.name + attribs_to_string(node.attribs) + "/>"
+      return "<" + node.name + helpers.attribs_to_string(node.attribs) + "/>"
     }
   }
 
@@ -158,8 +169,15 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       // When the node is a text type, it has no children, just return it.
       if (node.type === "text") {
         output += node.data
-      // Check to see if this node is a header, which should signal the start of
-      // a new section.
+      // Markdown doesn't convert pre blocks the way we would like, so let's
+      // step in and make it all work.
+      } else if (node.name === "pre" && node.children.length === 1 && node.children[0].name === "code") {
+        // Attempt to distinguish between "code" <pre> blocks and other <pre>s
+        var code = node.children[0]
+        node.attribs["data-code-language"] = helpers.get_language(code.attribs["class"])
+        node.attribs["data-type"] = "programlisting";
+        output += open_tag(node) + this.traverse(code.children) + close_tag(node);
+      // Check to see if this node is a header, which should signal the start // of a new section.
       } else if (_.contains(markdown_headers, node.name)) {
         this.openings += 1;
         output += this.wrap_in_section(node, this.traverse)
@@ -169,6 +187,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       // Void elements
       } else if (_.contains(void_elements, node.name)) {
         output += void_tag(node)
+      // Everything else, typically empty elements with no children.
       } else {
         output += open_tag(node) + close_tag(node);
       }

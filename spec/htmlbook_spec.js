@@ -1,6 +1,8 @@
 var htmlbook = require('../htmlbook');
 var fs = require('fs');
 var S = require('string');
+var marked = require('marked');
+marked.setOptions({gfm: true});
 
 describe("htmlbook", function () {
   it("should return an error when given no input", function (done) {
@@ -51,6 +53,18 @@ describe("htmlbook", function () {
         if (err) throw new Error("Error opening html document");
 
         expect(htmlbook(source).parse({"complete_html": true, "title": "Given Title"})).toEqual(html);
+        done();
+      });
+    });
+  });
+
+  it("should render code blocks from Markdown as <pre> tags.", function (done) {
+    fs.readFile("spec/documents/code.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
+      var result = htmlbook(source).parse();
+
+      fs.readFile("spec/documents/code.html", "utf-8", function (err, html) {
+        expect(result).toEqual(html);
         done();
       });
     });
