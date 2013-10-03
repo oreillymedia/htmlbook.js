@@ -2,7 +2,7 @@
 
 ## Sect 1
 
-Will this work?
+Will this work? I got this SVG from [Mozilla](https://developer.mozilla.org/en-US/docs/SVG_In_HTML_Introduction).
 
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"
