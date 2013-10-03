@@ -21,11 +21,11 @@
     "optparse": "1.0.4",
     "html": "0.0.7",
     "underscore": "1.5.2",
-    "htmlparser2": ""
+    "htmlparser2": "",
+    "string": "1.6.0"
   },
   "devDependencies": {
     "xml2js": "0.2.8",
-    "jasmine-node": "1.11.0",
-    "string": "1.6.0"
+    "jasmine-node": "1.11.0"
   }
 }
