@@ -62,8 +62,6 @@ describe("htmlbook", function () {
 
   //     var result = htmlbook(data).parse({"complete_html": true, "title": "Open Government Sample"});
 
-  //     fs.writeFile("result.html", result);
-
   //     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
   //       // expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
   //       expect(result).toEqual(html);
@@ -75,5 +73,4 @@ describe("htmlbook", function () {
   // it("should throw an error when no title present in complete mode.")
   // it("should be idempotent");
   // it("should also accept HTML documents");
-  // it("should properly render self closing tags");
 });

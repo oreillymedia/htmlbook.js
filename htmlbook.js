@@ -2,7 +2,7 @@ var sys = require('sys'),
   fs = require('fs'),
   util = require('util'),
   _ = require('underscore'),
-  htmlparser = require('htmlparser'),
+  htmlparser = require('htmlparser2'),
   html = require('html'),
   marked = require('marked'),
   schema = require('./schema'),
@@ -82,14 +82,14 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     this.openings = 0;
     this.first_heading = true;
     this.first_sect1 = false;
-    var handler = new htmlparser.DefaultHandler(function (error, dom) {
+    var handler = new htmlparser.DomHandler(function (error, dom) {
       if (error) {
         console.log('error dog');process.exit(1)
       }
     });
     var parser = new htmlparser.Parser(handler);
-    parser.parseComplete(marked(this.input));
-    parser.done();
+    parser.write(marked(this.input));
+    parser.end();
 
     if (this.options.parse.complete_html === true) {
       return this.header_content() + this.traverse(handler.dom) + close_sections(this.openings, this.closings) + this.footer_content();
@@ -112,6 +112,14 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   // Construct an opening tag with the specified attributes.
   var open_tag = function (node) {
     return "<" + node.name + attribs_to_string(node.attribs) + ">"
+  }
+
+  var void_tag = function (node) {
+    if (node.name === "input") {
+      return "<div><" + node.name + attribs_to_string(node.attribs) + "/></div>";
+    } else {
+      return "<" + node.name + attribs_to_string(node.attribs) + "/>"
+    }
   }
 
   var close_tag = function (node) {
@@ -156,11 +164,11 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
         this.openings += 1;
         output += this.wrap_in_section(node, this.traverse)
       // If a node has children then it has a starting and closing tag.
-      } else if (helpers.existy(node.children)) {
+      } else if (node.children.length !== 0) {
         output += open_tag(node) + this.traverse(node.children) + close_tag(node);
       // Void elements
       } else if (_.contains(void_elements, node.name)) {
-        output += open_tag(node)
+        output += void_tag(node)
       } else {
         output += open_tag(node) + close_tag(node);
       }
