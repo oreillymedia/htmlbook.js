@@ -182,7 +182,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
         this.openings += 1;
         output += this.wrap_in_section(node, this.traverse)
       // If a node has children then it has a starting and closing tag.
-      } else if (node.children.length !== 0) {
+      } else if (helpers.existy(node.children) && node.children.length !== 0) {
         output += open_tag(node) + this.traverse(node.children) + close_tag(node);
       // Void elements
       } else if (_.contains(void_elements, node.name)) {
