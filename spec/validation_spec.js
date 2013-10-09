@@ -39,4 +39,8 @@ describe("htmlbook validations", function () {
   it("should convert math.md to valid HTMLBook", function (done) {
     convert_and_validate("spec/documents/math.md", done);
   });
+
+  it ("should convert opengovernment spec", function (done) {
+    convert_and_validate("../HTMLBook/samples/markdown/open_government_sample.md", done);
+  });
 });

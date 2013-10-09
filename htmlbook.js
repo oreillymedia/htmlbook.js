@@ -10,7 +10,10 @@ var sys = require('sys'),
   complex = schema["xs:schema"]["xs:complexType"],
   S = require('string');
 
-marked.setOptions({gfm: true});
+marked.setOptions({
+  gfm: true,
+  tables: true
+});
 
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
@@ -28,8 +31,9 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
         return "  "
       }).join("")
     },
+
     get_language: function (str) {
-      if (!this.existy(str)) return "";
+      if (!this.existy(str)) return null;
       match = str.match(/lang\-(\S*)/);
 
       if (this.existy(match)) {
@@ -38,6 +42,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
         return "";
       }
     },
+
     attribs_to_string: function (obj) {
       if (!this.existy(obj))
         return ""
@@ -45,8 +50,10 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       return _.reduce(_.pairs(obj), function (memo, v) {
         if (this.existy(v[1]) && v[1].length > 0)
           return memo + " " + v[0] + "='" + v[1]+ "'"
+        else if (this.existy(v[1]) && v[1] === "")
+          return memo + " " + v[0] + "=''"
         else
-          return memo
+          return memo;
       }, "", this);
     }
   }
@@ -168,7 +175,9 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
     _.forEach(dom_tree, function (node, i) {
       // When the node is a text type, it has no children, just return it.
       if (node.type === "text") {
-        output += node.data
+        output += S(node.data).unescapeHTML().s.replace(/([<>&])/gm, function(m){return S(m).escapeHTML().s});
+      } else if (node.type === "comment") {
+        output += "<!-- "+node.data+"-->";
       // Markdown doesn't convert pre blocks the way we would like, so let's
       // step in and make it all work.
       } else if (node.name === "pre" && node.children.length === 1 && node.children[0].name === "code") {
@@ -193,7 +202,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       }
     }, this);
 
-    return S(output).decodeHTMLEntities().s;
+    return output;
   }
 
   module.exports = function (str) {return new HTMLBook(str)};

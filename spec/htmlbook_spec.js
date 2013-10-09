@@ -58,7 +58,7 @@ describe("htmlbook", function () {
     });
   });
 
-  it("should render code blocks from Markdown as <pre> tags.", function (done) {
+  it("should render code blocks from Markdown as <pre> tags. And escape <, > & &.", function (done) {
     fs.readFile("spec/documents/code.md", "utf-8", function (err, source) {
       if (err) throw new Error("Error opening source document");
       var result = htmlbook(source).parse();
@@ -70,21 +70,5 @@ describe("htmlbook", function () {
     });
   });
 
-  // it("should convert the markdown sample in oreillymedia/htmlbook to the desired result", function (done) {
-  //   fs.readFile("../HTMLBook/samples/markdown/open_government_sample.md", "utf-8", function (err, data) {
-  //     if (err) throw new Error("Error opening the document");
-
-  //     var result = htmlbook(data).parse({"complete_html": true, "title": "Open Government Sample"});
-
-  //     fs.readFile("../HTMLBook/samples/markdown/open_government_sample.html", "utf-8", function (err, html) {
-  //       // expect(S(result).replaceAll(/\s/,"").s).toEqual(S(html).replaceAll(/\s/,"").s);
-  //       expect(result).toEqual(html);
-  //       done();
-  //     });
-  //   });
-  // });
-
   // it("should throw an error when no title present in complete mode.")
-  // it("should be idempotent");
-  // it("should also accept HTML documents");
 });
