@@ -1,6 +1,6 @@
 {
   "name": "htmlbook",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Markdown to HTMLBook converter",
   "main": "./htmlbook.js",
   "bin": {
