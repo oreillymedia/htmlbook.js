@@ -20,6 +20,10 @@ var convert_and_validate = function (file_name, callback) {
 }
 
 describe("htmlbook validations", function () {
+  it("BBEPart2", function (done) {
+    convert_and_validate("spec/samples/BBEPart2.md", done)
+  })
+
   it("streams", function (done) {
     convert_and_validate("spec/samples/streams.md", done)
   })
