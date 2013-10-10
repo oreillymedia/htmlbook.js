@@ -166,7 +166,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   }
 
   HTMLBook.prototype.wrap_in_section = function (node, callback) {
-    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + ">" + callback(node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
+    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + ">" + callback.call(this, node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
   }
 
   HTMLBook.prototype.traverse = function (dom_tree, htmlbook_tracker) {
@@ -176,8 +176,10 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       // When the node is a text type, it has no children, just return it.
       if (node.type === "text") {
         output += S(node.data).unescapeHTML().s.replace(/([<>&])/gm, function(m){return S(m).escapeHTML().s});
+
       } else if (node.type === "comment") {
         output += "<!-- "+node.data+"-->";
+
       // Markdown doesn't convert pre blocks the way we would like, so let's
       // step in and make it all work.
       } else if (node.name === "pre" && node.children.length === 1 && node.children[0].name === "code") {
@@ -186,8 +188,9 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
         node.attribs["data-code-language"] = helpers.get_language(code.attribs["class"])
         node.attribs["data-type"] = "programlisting";
         output += open_tag(node) + this.traverse(code.children) + close_tag(node);
-      // Check to see if this node is a header, which should signal the start // of a new section.
-      } else if (_.contains(markdown_headers, node.name)) {
+
+      // Check to see if this node is a header, which should signal the start // of a new section. Only allow headers without parent elements.
+      } else if (_.contains(markdown_headers, node.name) && !helpers.existy(node.parent) ) {
         this.openings += 1;
         output += this.wrap_in_section(node, this.traverse)
       // If a node has children then it has a starting and closing tag.

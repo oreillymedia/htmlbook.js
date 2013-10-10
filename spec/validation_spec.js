@@ -20,6 +20,22 @@ var convert_and_validate = function (file_name, callback) {
 }
 
 describe("htmlbook validations", function () {
+  it("streams", function (done) {
+    convert_and_validate("spec/samples/streams.md", done)
+  })
+
+  it("artofnode", function (done) {
+    convert_and_validate("spec/samples/artofnode.md", done)
+  })
+
+  it("dataviz tech", function (done) {
+    convert_and_validate("spec/samples/dataviz_tech.md", done)
+  })
+
+  it("dataviz data", function (done) {
+    convert_and_validate("spec/samples/dataviz_data.md", done)
+  })
+
   it("should convert all_headings.md to valid HTMLBook", function (done) {
     convert_and_validate("spec/documents/all_headings.md", done);
   });
