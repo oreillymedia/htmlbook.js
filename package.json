@@ -17,7 +17,7 @@
   "author": "O'Reilly Media",
   "license": "MIT",
   "dependencies": {
-    "marked": "0.2.9",
+    "marked": "0.2.10",
     "optparse": "1.0.4",
     "html": "0.0.7",
     "underscore": "1.5.2",

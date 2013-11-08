@@ -15,6 +15,23 @@ marked.setOptions({
   tables: true
 });
 
+var def_marked = function (input) {
+  md = marked(input);
+
+  def_list_regex = /(((: .+\n)+((= |  ).*\n)*)(?:\n*))+/gi
+
+  // : Apple
+  // = Pomaceous fruit of plants of the genus Malus in
+  //   the family Rosaceae.
+  // = An American computer company.
+
+  // : Citrus
+  // : Orange
+  // = The fruit of an evergreen tree of the genus Citrus.
+
+  console.log(md.match(def_list_regex))
+}
+
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
   heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
