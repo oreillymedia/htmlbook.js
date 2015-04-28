@@ -70,5 +70,18 @@ describe("htmlbook", function () {
     });
   });
 
+  it("should not parse html tags as markdown", function (done) {
+    fs.readFile("spec/documents/markup.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
+      var result = htmlbook(source).parse();
+
+      fs.readFile("spec/documents/markup.html", "utf-8", function (err, html) {
+        console.log(result)
+        expect(result).toEqual(html);
+        done();
+      });
+    });
+  });
+
   // it("should throw an error when no title present in complete mode.")
 });
