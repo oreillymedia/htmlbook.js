@@ -4,7 +4,7 @@ Basic
   2*4*8=64
 </pre>
 
-Block
+Block with *markdown*
 
 Nested
 <section>
