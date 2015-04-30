@@ -13,16 +13,19 @@
     "type": "git",
     "url": "https://github.com/oreillymedia/htmlbook.js"
   },
-  "keywords": ["htmlbook", "markdown"],
+  "keywords": [
+    "htmlbook",
+    "markdown"
+  ],
   "author": "O'Reilly Media",
   "license": "MIT",
   "dependencies": {
-    "marked": "0.3.3",
-    "optparse": "1.0.4",
     "html": "0.0.7",
-    "underscore": "1.5.2",
     "htmlparser2": "",
-    "string": "1.6.0"
+    "optparse": "1.0.4",
+    "remarkable": "^1.6.0",
+    "string": "1.6.0",
+    "underscore": "1.5.2"
   },
   "devDependencies": {
     "xml2js": "0.2.8",

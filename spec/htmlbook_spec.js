@@ -76,7 +76,6 @@ describe("htmlbook", function () {
       var result = htmlbook(source).parse();
 
       fs.readFile("spec/documents/markup.html", "utf-8", function (err, html) {
-        console.log(result)
         expect(result).toEqual(html);
         done();
       });

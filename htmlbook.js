@@ -4,16 +4,18 @@ var sys = require('sys'),
   _ = require('underscore'),
   htmlparser = require('htmlparser2'),
   html = require('html'),
-  marked = require('marked'),
   schema = require('./schema'),
   elements = schema["xs:schema"]["xs:element"],
   complex = schema["xs:schema"]["xs:complexType"],
-  S = require('string');
+  S = require('string'),
+  Remarkable = require('remarkable'),
+  md = new Remarkable('commonmark');
 
-marked.setOptions({
-  gfm: true,
-  tables: true,
-  pedantic: true
+md.set({
+  html: true,
+  breaks: true,
+  linkify: false,
+  langPrefix: 'lang-',
 });
 
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
@@ -117,7 +119,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       }
     });
     var parser = new htmlparser.Parser(handler);
-    parser.write(marked(this.input));
+    parser.write(md.render(this.input));
     parser.end();
 
     if (this.options.parse.complete_html === true) {
