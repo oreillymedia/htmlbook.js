@@ -1,6 +1,6 @@
 {
   "name": "htmlbook",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Markdown to HTMLBook converter",
   "main": "./htmlbook.js",
   "bin": {
@@ -22,8 +22,8 @@
   "dependencies": {
     "html": "0.0.7",
     "htmlparser2": "",
+    "kramed": "^0.5.0",
     "optparse": "1.0.4",
-    "remarkable": "^1.6.0",
     "string": "1.6.0",
     "underscore": "1.5.2"
   },

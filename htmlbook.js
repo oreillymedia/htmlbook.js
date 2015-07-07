@@ -8,15 +8,7 @@ var sys = require('sys'),
   elements = schema["xs:schema"]["xs:element"],
   complex = schema["xs:schema"]["xs:complexType"],
   S = require('string'),
-  Remarkable = require('remarkable'),
-  md = new Remarkable('commonmark');
-
-md.set({
-  html: true,
-  breaks: true,
-  linkify: false,
-  langPrefix: 'lang-',
-});
+  kramed = require('kramed');
 
 var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   htmlbook_headers = ['h1','h1','h2','h3','h4','h5'],
@@ -119,7 +111,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
       }
     });
     var parser = new htmlparser.Parser(handler);
-    parser.write(md.render(this.input));
+    parser.write(kramed(this.input));
     parser.end();
 
     if (this.options.parse.complete_html === true) {
