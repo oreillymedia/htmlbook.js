@@ -161,7 +161,7 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   }
 
   HTMLBook.prototype.wrap_in_section = function (node, callback) {
-    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + ">" + callback.call(this, node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
+    return this.section_start(node.name) + "<" + htmlbook_headers[this.depth] + helpers.attribs_to_string(node.attribs) + ">" + callback.call(this, node.children) + "</" + htmlbook_headers[this.depth] + ">\n"
   }
 
   HTMLBook.prototype.traverse = function (dom_tree, htmlbook_tracker) {

@@ -15,7 +15,7 @@ describe("htmlbook", function () {
   });
 
   it("should insert an HTMLBook Chapter in the document", function (done) {
-    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("<section data-type='chapter'>\n<h1>Title</h1>\n\n<p>some line of stuff</p>\n</section>");
+    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("<section data-type='chapter'>\n<h1 id='title'>Title</h1>\n\n<p>some line of stuff</p>\n</section>");
     done();
   });
 
@@ -76,6 +76,18 @@ describe("htmlbook", function () {
       var result = htmlbook(source).parse();
 
       fs.readFile("spec/documents/markup.html", "utf-8", function (err, html) {
+        expect(result).toEqual(html);
+        done();
+      });
+    });
+  });
+
+  it("should add ids to headers", function (done) {
+    fs.readFile("spec/documents/ids.md", "utf-8", function (err, source) {
+      if (err) throw new Error("Error opening source document");
+      var result = htmlbook(source).parse();
+
+      fs.readFile("spec/documents/ids.html", "utf-8", function (err, html) {
         expect(result).toEqual(html);
         done();
       });
