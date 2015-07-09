@@ -15,6 +15,11 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
   void_elements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
 
+kramed.setOptions({
+  autoIds: false,
+  renderer: false // must be recreated by Parser to get options
+});
+
 (function () {
   var helpers = {
     existy: function (x) {

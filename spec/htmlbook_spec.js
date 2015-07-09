@@ -15,7 +15,7 @@ describe("htmlbook", function () {
   });
 
   it("should insert an HTMLBook Chapter in the document", function (done) {
-    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("<section data-type='chapter'>\n<h1 id='title'>Title</h1>\n\n<p>some line of stuff</p>\n</section>");
+    expect(htmlbook("# Title\n\nsome line of stuff").parse()).toEqual("<section data-type='chapter'>\n<h1>Title</h1>\n\n<p>some line of stuff</p>\n</section>");
     done();
   });
 

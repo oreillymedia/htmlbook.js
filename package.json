@@ -22,7 +22,7 @@
   "dependencies": {
     "html": "0.0.7",
     "htmlparser2": "",
-    "kramed": "^0.5.0",
+    "kramed": "fchasen/kramed#autoIds",
     "optparse": "1.0.4",
     "string": "1.6.0",
     "underscore": "1.5.2"
