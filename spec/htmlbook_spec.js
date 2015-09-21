@@ -95,4 +95,9 @@ describe("htmlbook", function () {
   });
 
   // it("should throw an error when no title present in complete mode.")
+
+  it("should handle CDATA", function (done) {
+    expect(htmlbook("<pre><![CDATA[ </body> ]]></pre>").parse()).toEqual("<pre><![CDATA[ </body> ]]></pre>");
+    done();
+  });
 });

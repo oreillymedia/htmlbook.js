@@ -4,4 +4,4 @@
 
 <a name="anchor"></a>
 
-<input type="text">
+<input type="text"/>
