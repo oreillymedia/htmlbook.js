@@ -15,6 +15,8 @@ var markdown_headers = ['h1','h2','h3','h4','h5','h6'],
   heirarchy = ['chapter', 'sect1', 'sect2', 'sect3', 'sect4', 'sect5'],
   void_elements = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'menuitem', 'meta', 'param', 'source', 'track', 'wbr'];
 
+var parserOptions = { xmlMode:true }; // Parse as XML
+
 kramed.setOptions({
   autoIds: false,
   renderer: false // must be recreated by Parser to get options
@@ -115,7 +117,7 @@ kramed.setOptions({
         console.log('error dog');process.exit(1)
       }
     });
-    var parser = new htmlparser.Parser(handler);
+    var parser = new htmlparser.Parser(handler, parserOptions);
     parser.write(kramed(this.input));
     parser.end();
 
@@ -179,7 +181,16 @@ kramed.setOptions({
 
       } else if (node.type === "comment") {
         output += "<!-- "+node.data+"-->";
-
+      // In XML mode, cdata isn't treated as a comment so render it here
+      } else if (node.type === "cdata") {
+        if(node.children.length === 1) {
+          // Should always only have one text child, rendered unescaped
+          output += "<![CDATA["+ node.children[0].data +"]]>";
+        } else {
+          // But maybe something crazy happend, render the children but
+          // escape html in text
+          output += "<![CDATA["+ this.traverse(node.children) +"]]>";
+        }
       // Markdown doesn't convert pre blocks the way we would like, so let's
       // step in and make it all work.
       } else if (node.name === "pre" && node.children.length === 1 && node.children[0].name === "code") {
