@@ -177,7 +177,7 @@ kramed.setOptions({
     _.forEach(dom_tree, function (node, i) {
       // When the node is a text type, it has no children, just return it.
       if (node.type === "text") {
-        output += S(node.data).unescapeHTML().s.replace(/([<>])/gm, function(m){return S(m).escapeHTML().s});
+        output += S(node.data).unescapeHTML().s.replace(/([<>&])/gm, function(m){return S(m).escapeHTML().s});
       } else if (node.type === "comment") {
         output += "<!-- "+node.data+"-->";
       // In XML mode, cdata isn't treated as a comment so render it here
