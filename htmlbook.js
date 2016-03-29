@@ -1,5 +1,4 @@
-var sys = require('sys'),
-  fs = require('fs'),
+var fs = require('fs'),
   util = require('util'),
   _ = require('underscore'),
   htmlparser = require('htmlparser2'),
