@@ -1,0 +1,33 @@
+name: Run Jasmine Tests
+
+on:
+  push:
+    branches:
+      - main  # Or your main branch
+  pull_request:
+    branches:
+      - main  # Or your main branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run htmlbook_spec
+        run: npx jasmine spec/htmlbook_spec.js
+
+      # This is a placeholder for now; requires the availability of a local copy
+      # of github.com/oreillymedia/HTMLBook
+      # - name: Run validation spec
+      #   run: npx jasmine spec/validation_spec.js
