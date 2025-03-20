@@ -54,11 +54,11 @@ Below is a list of available options, default value is emphasized.
 There are two suites of tests for this repository. The first is `spec/htmlbook_spec.js` and tests the package for expected output. Run this test with the following:
 
 ```bash
-$ jasmine-node spec/htmlbook_spec.js
+$ npx jasmine spec/htmlbook_spec.js
 ```
 
 The second test suite checks to be sure that the file being tested in `htmlbook_spec` are in fact being output to valid HTMLBook. It's no use writing tests that pass unless they pass on valid output. These tests are separated because the validation takes longer.
 
 ```bash
-$ jasmine-node spec/validation_spec.js
+$ npx jasmine spec/validation_spec.js
 ```
