@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-var sys = require('sys'),
-  fs = require('fs'),
-  optparse = require('optparse'),
-  path = require('path'),
-  htmlbook = require('../htmlbook'),
-  html = require('html'),
-  cwd = process.cwd();
+const fs = require('fs');
+const optparse = require('optparse');
+const path = require('path');
+const htmlbook = require('../htmlbook');
+const html = require('html');
+const cwd = process.cwd();
 
 // Define an option called ´´help´´. We give it a quick alias named ´´-h´´
 // and a quick help text.
@@ -50,7 +49,7 @@ parser.on('output', function (name, value) {
 })
 
 parser.on('help', function() {
-  sys.puts(parser.toString());
+  console.log(parser.toString());
 });
 
 parser.parse(process.argv);
@@ -58,16 +57,18 @@ parser.parse(process.argv);
 if (source_path) {
   fs.readFile(source_path, 'utf8', function (err, data) {
     if (err) {
-      sys.puts(err);
+      console.log(err);
       process.exit(1);
     }
 
     var result = htmlbook(data).parse(options);
 
     if (output_path) {
-      fs.writeFile(output_path, result);
+      fs.writeFile(output_path, result, (err) => {
+        if (err) throw err;
+      })
     } else {
-      sys.puts(result);
+      console.log(result);
     }
   });
 } else {
@@ -78,7 +79,7 @@ if (source_path) {
     if (output_path) {
       fs.writeFile(output_path, result);
     } else {
-      sys.puts(result);
+      console.log(result);
     }
   }
 }
