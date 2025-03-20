@@ -1,12 +1,6 @@
 name: Run Jasmine Tests
 
-on:
-  push:
-    branches:
-      - main  # Or your main branch
-  pull_request:
-    branches:
-      - main  # Or your main branch
+on: [push, pull_request]
 
 jobs:
   test:
