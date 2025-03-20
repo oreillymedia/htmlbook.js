@@ -25,10 +25,11 @@
     "kramed": "fchasen/kramed#autoIds",
     "optparse": "1.0.4",
     "string": "1.6.0",
-    "underscore": "1.5.2"
+    "underscore": "^1.13.7"
   },
   "devDependencies": {
-    "xml2js": "0.2.8",
-    "jasmine-node": "1.11.0"
+    "jasmine": "^5.6.0",
+    "marked": "^15.0.7",
+    "tmp": "^0.2.3"
   }
 }
