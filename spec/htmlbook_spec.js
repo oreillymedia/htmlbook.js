@@ -1,6 +1,5 @@
 var htmlbook = require('../htmlbook');
 var fs = require('fs');
-var S = require('string');
 var marked = require('marked');
 marked.setOptions({gfm: true});
 
